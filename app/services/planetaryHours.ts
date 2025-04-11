@@ -17,6 +17,17 @@ const PLANETARY_HOUR_SEQUENCE: PlanetDay[] = [
   'moon'     // ☽ Moon
 ];
 
+// Mapping of day of week to ruling planet (0 = Sunday)
+const DAY_RULERS: PlanetDay[] = [
+  'sun',     // Sunday
+  'moon',    // Monday
+  'mars',    // Tuesday
+  'mercury', // Wednesday
+  'jupiter', // Thursday
+  'venus',   // Friday
+  'saturn'   // Saturday
+];
+
 /**
  * Calculate planetary hours with improved accuracy
  *
@@ -77,11 +88,12 @@ export const calculatePlanetaryHours = async (
     console.log('Night Hour Duration (minutes):', nightHourDuration);
 
     // Get the day of week (0-6, where 0 is Sunday)
-    // Luxon uses 1-7 where 7 is Sunday, so we need to convert
-    const dayOfWeek = dt.weekday === 7 ? 0 : dt.weekday % 7;
+    // JavaScript's getDay() returns 0 for Sunday, 1 for Monday, etc.
+    const jsDate = dt.toJSDate();
+    const dayOfWeek = jsDate.getDay();
     
     // Get the ruling planet for this day
-    const dayRuler: PlanetDay = planetaryDayRulers[dayOfWeek];
+    const dayRuler: PlanetDay = DAY_RULERS[dayOfWeek];
     
     console.log('Day of week:', dt.weekdayLong, '(', dayOfWeek, ')');
     console.log('Day ruling planet:', dayRuler);
@@ -94,7 +106,6 @@ export const calculatePlanetaryHours = async (
     console.log('Current time is during:', isDuringDay ? 'day' : 'night');
     
     // Find the index of the day ruler in the planetary hour sequence
-    // This is crucial for determining the correct sequence of hours
     const dayRulerIndex = PLANETARY_HOUR_SEQUENCE.indexOf(dayRuler);
     if (dayRulerIndex === -1) {
       throw new Error(`Day ruler ${dayRuler} not found in planetary hour sequence`);
@@ -107,31 +118,49 @@ export const calculatePlanetaryHours = async (
       const isDayHour = hourNumber <= 12;
       
       // Calculate the position in the planetary sequence
-      // The first hour of the day is ruled by the day ruler
-      // Each subsequent hour follows the traditional sequence
-      const sequencePosition = (dayRulerIndex + hourNumber - 1) % 7;
+      // For day hours, the first hour is ruled by the day ruler
+      // For night hours, we continue the sequence from where day hours left off
+      let hourOffset = hourNumber - 1; // 0-based index
+      const sequencePosition = (dayRulerIndex + hourOffset) % 7;
       const planetName: PlanetDay = PLANETARY_HOUR_SEQUENCE[sequencePosition];
       
       // Calculate start and end times for this hour
       let startTime, endTime;
       
       if (isDayHour) {
-        // Day hours (1-12) start at sunrise and each lasts dayHourDuration
-        const hourIndex = hourNumber - 1; // Convert to 0-based index
-        startTime = sunriseTime.plus({ minutes: hourIndex * dayHourDuration });
-        endTime = startTime.plus({ minutes: dayHourDuration });
+        // For day hours (1-12), divide the time between sunrise and sunset into 12 equal parts
+        // Each planetary hour during the day has the same duration
+        if (hourNumber === 1) {
+          // First hour starts at sunrise
+          startTime = sunriseTime;
+        } else {
+          // Calculate start time based on previous hours
+          startTime = sunriseTime.plus({ minutes: (hourNumber - 1) * dayHourDuration });
+        }
         
-        // Ensure the last day hour (12) doesn't go past sunset
+        // End time is start time plus the duration of one day hour
+        endTime = sunriseTime.plus({ minutes: hourNumber * dayHourDuration });
+        
+        // Ensure the last day hour doesn't go past sunset
         if (hourNumber === 12) {
           endTime = sunsetTime;
         }
       } else {
-        // Night hours (13-24) start at sunset and each lasts nightHourDuration
-        const nightHourIndex = hourNumber - 13; // Convert to 0-based index (0-11)
-        startTime = sunsetTime.plus({ minutes: nightHourIndex * nightHourDuration });
-        endTime = startTime.plus({ minutes: nightHourDuration });
+        // For night hours (13-24), divide the time between sunset and next sunrise into 12 equal parts
+        const nightHourIndex = hourNumber - 13; // 0-based index for night hours
         
-        // Ensure the last night hour (24) doesn't go past sunrise
+        if (hourNumber === 13) {
+          // First night hour starts at sunset
+          startTime = sunsetTime;
+        } else {
+          // Calculate start time based on previous night hours
+          startTime = sunsetTime.plus({ minutes: nightHourIndex * nightHourDuration });
+        }
+        
+        // End time is start time plus the duration of one night hour
+        endTime = sunsetTime.plus({ minutes: (nightHourIndex + 1) * nightHourDuration });
+        
+        // Ensure the last night hour doesn't go past next sunrise
         if (hourNumber === 24) {
           endTime = nextSunriseTime;
         }
