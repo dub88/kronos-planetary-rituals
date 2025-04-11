@@ -1,8 +1,30 @@
 import { DateTime } from 'luxon';
 import { chaldeanOrder, planetaryDayRulers, planetarySymbols } from '../constants/planets';
 import type { PlanetDay, PlanetaryHour } from '../types';
-// Using require for SunCalc to avoid dynamic import issues
-const SunCalc = require('suncalc');
+// Import SunCalc with proper error handling
+let SunCalc: any;
+try {
+  // Try to import SunCalc
+  SunCalc = require('suncalc');
+  console.log('SunCalc loaded successfully');
+} catch (error) {
+  console.error('Error loading SunCalc:', error);
+  // Fallback to a simple sunrise/sunset calculation if SunCalc fails to load
+  SunCalc = {
+    getTimes: (date: Date, lat: number, lng: number) => {
+      console.warn('Using fallback sunrise/sunset calculation');
+      // Simple fallback calculation (approximate)
+      const year = date.getFullYear();
+      const month = date.getMonth();
+      const day = date.getDate();
+      // Default sunrise around 6 AM
+      const sunrise = new Date(year, month, day, 6, 0, 0);
+      // Default sunset around 6 PM
+      const sunset = new Date(year, month, day, 18, 0, 0);
+      return { sunrise, sunset };
+    }
+  };
+}
 
 /**
  * Calculates the planetary hours for a given date and location.
@@ -23,23 +45,47 @@ export const calculatePlanetaryHours = async (
   wakingHourEnd: number = 22    // Default waking hours end at 10 PM
 ): Promise<PlanetaryHour[]> => {
   console.log(`Calculating planetary hours for ${DateTime.fromJSDate(date).toFormat('yyyy-MM-dd')} at ${latitude}, ${longitude}`);
+  console.log(`Using timezone: ${timezone}`);
+  
+  // Validate inputs to prevent errors
+  const validLatitude = !isNaN(latitude) && latitude >= -90 && latitude <= 90 ? latitude : 0;
+  const validLongitude = !isNaN(longitude) && longitude >= -180 && longitude <= 180 ? longitude : 0;
+  const validDate = date instanceof Date && !isNaN(date.getTime()) ? date : new Date();
+  
+  if (validLatitude !== latitude || validLongitude !== longitude) {
+    console.warn('Invalid coordinates provided, using fallback values:', validLatitude, validLongitude);
+  }
   
   try {
     // Get the day of the week (0 = Sunday, 6 = Saturday)
-    const dayOfWeek = date.getDay();
+    const dayOfWeek = validDate.getDay();
     const rulingPlanet = planetaryDayRulers[dayOfWeek] as PlanetDay;
     const startIndex = chaldeanOrder.indexOf(rulingPlanet);
     
+    console.log(`Day of week: ${dayOfWeek} (${DateTime.fromJSDate(validDate).weekdayLong})`);
+    console.log(`Ruling planet: ${rulingPlanet}`);
+    console.log(`Start index in Chaldean order: ${startIndex}`);
+    console.log(`Chaldean order:`, chaldeanOrder);
+    
     // Calculate sunrise and sunset times for the given date and location
-    const times = SunCalc.getTimes(date, latitude, longitude);
+    console.log(`Calculating sun times for: ${validDate.toISOString()}`);
+    const times = SunCalc.getTimes(validDate, validLatitude, validLongitude);
+    console.log('Raw sun times:', times.sunrise, times.sunset);
+    
+    // Convert to DateTime objects in the correct timezone
     const sunrise = DateTime.fromJSDate(times.sunrise).setZone(timezone);
     const sunset = DateTime.fromJSDate(times.sunset).setZone(timezone);
     
+    console.log(`Sunrise (${timezone}): ${sunrise.toISO()}`);
+    console.log(`Sunset (${timezone}): ${sunset.toISO()}`);
+    
     // Calculate sunrise for the next day to determine the end of the night
-    const nextDate = new Date(date);
+    const nextDate = new Date(validDate);
     nextDate.setDate(nextDate.getDate() + 1);
-    const nextTimes = SunCalc.getTimes(nextDate, latitude, longitude);
+    console.log(`Calculating next day sun times for: ${nextDate.toISOString()}`);
+    const nextTimes = SunCalc.getTimes(nextDate, validLatitude, validLongitude);
     const nextSunrise = DateTime.fromJSDate(nextTimes.sunrise).setZone(timezone);
+    console.log(`Next sunrise (${timezone}): ${nextSunrise.toISO()}`);
     
     // Calculate the duration of day and night in minutes
     const dayDuration = sunset.diff(sunrise, 'minutes').minutes;
@@ -124,42 +170,64 @@ export const calculatePlanetaryHours = async (
 export const findCurrentPlanetaryHour = async (
   latitude: number,
   longitude: number,
-  date: Date,
-  timezone: string = 'local'
+  date: Date = new Date(),
+  timezone: string = 'UTC'
 ): Promise<PlanetaryHour | null> => {
+  console.log(`Finding current planetary hour for ${DateTime.fromJSDate(date).toFormat('yyyy-MM-dd HH:mm:ss')} at ${latitude}, ${longitude}`);
+  
   try {
-    const validDate = date instanceof Date && !isNaN(date.getTime()) ? new Date(date) : new Date();
-    const validLatitude = !isNaN(latitude) && latitude >= -90 && latitude <= 90 ? latitude : 40.7128;
-    const validLongitude = !isNaN(longitude) && longitude >= -180 && longitude <= 180 ? longitude : -74.0060;
+    // Validate inputs to prevent errors
+    const validLatitude = !isNaN(latitude) && latitude >= -90 && latitude <= 90 ? latitude : 0;
+    const validLongitude = !isNaN(longitude) && longitude >= -180 && longitude <= 180 ? longitude : 0;
+    const validDate = date instanceof Date && !isNaN(date.getTime()) ? date : new Date();
     
-    // Await the promise from calculatePlanetaryHours
+    // Get the current time in the specified timezone
+    const now = DateTime.fromJSDate(validDate).setZone(timezone);
+    console.log(`Current time in ${timezone}: ${now.toISO()}`);
+    
+    // Calculate all planetary hours for the day
+    console.log('Calculating planetary hours for current day...');
     const planetaryHours = await calculatePlanetaryHours(validLatitude, validLongitude, validDate, timezone);
-    const now = validDate.getTime();
     
-    // Find current hour
-    const currentHour = planetaryHours.find((hour: PlanetaryHour) => 
-      now >= hour.startTime.getTime() && now < hour.endTime.getTime()
-    );
+    if (planetaryHours.length === 0) {
+      console.warn('No planetary hours calculated');
+      return null;
+    }
     
-    // Handle edge case at day boundary
-    if (!currentHour && planetaryHours.length > 0) {
-      const lastHour = planetaryHours[planetaryHours.length - 1];
+    // Find the current hour
+    const currentHour = planetaryHours.find(hour => hour.isCurrentHour);
+    
+    if (currentHour) {
+      console.log(`Found current hour: ${currentHour.hourNumber} (${currentHour.planet})`);
+      return currentHour;
+    } else {
+      // Check if we need to look at the next or previous day
       const firstHour = planetaryHours[0];
+      const lastHour = planetaryHours[planetaryHours.length - 1];
+      const firstHourStart = DateTime.fromJSDate(firstHour.startTime);
+      const lastHourEnd = DateTime.fromJSDate(lastHour.endTime);
       
-      if (now >= lastHour.endTime.getTime()) {
+      console.log(`First hour starts at: ${firstHourStart.toISO()}`);
+      console.log(`Last hour ends at: ${lastHourEnd.toISO()}`);
+      console.log(`Current time: ${now.toISO()}`);
+      
+      if (now > lastHourEnd) {
         // Calculate hours for next day
+        console.log('Current time is after last hour, checking next day...');
         const nextDay = new Date(validDate);
         nextDay.setDate(nextDay.getDate() + 1);
         return findCurrentPlanetaryHour(validLatitude, validLongitude, nextDay, timezone);
-      } else if (now < firstHour.startTime.getTime()) {
+      } else if (now < firstHourStart) {
         // Calculate hours for previous day
+        console.log('Current time is before first hour, checking previous day...');
         const prevDay = new Date(validDate);
         prevDay.setDate(prevDay.getDate() - 1);
         return findCurrentPlanetaryHour(validLatitude, validLongitude, prevDay, timezone);
       }
     }
     
-    return currentHour || null;
+    console.warn('Could not determine current planetary hour');
+    return null;
   } catch (error) {
     console.error('Error finding current planetary hour:', error);
     return null;

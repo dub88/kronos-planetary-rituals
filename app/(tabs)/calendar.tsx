@@ -34,18 +34,32 @@ export default function CalendarScreen() {
       try {
         // Get timezone from system
         const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        console.log('Calendar: Using timezone:', timezone);
         
         // Use location if available, otherwise use default values
         const latitude = location?.latitude || 0;
         const longitude = location?.longitude || 0;
+        console.log('Calendar: Using location:', { latitude, longitude, name: location?.name });
+        
+        // Force date to noon to avoid timezone issues
+        const dateAtNoon = new Date(selectedDate);
+        dateAtNoon.setHours(12, 0, 0, 0);
+        console.log('Calendar: Calculating for date:', dateAtNoon.toISOString());
         
         // Calculate planetary hours using the accurate implementation
+        console.log('Calendar: Calling calculatePlanetaryHours...');
         const hours = await calculatePlanetaryHours(
           latitude,
           longitude,
-          selectedDate,
+          dateAtNoon,
           timezone
         );
+        
+        console.log(`Calendar: Received ${hours.length} planetary hours`);
+        if (hours.length > 0) {
+          console.log('Calendar: First hour:', hours[0]);
+          console.log('Calendar: Current hour:', hours.find(h => h.isCurrentHour));
+        }
         
         setPlanetaryHours(hours as PlanetaryHour[]);
       } catch (err) {
@@ -196,6 +210,16 @@ export default function CalendarScreen() {
               <Text style={[styles.noDataText, { color: colors.text }]}>
                 No planetary hours data available
               </Text>
+              <TouchableOpacity 
+                style={[styles.retryButton, { backgroundColor: colors.primary }]}
+                onPress={() => {
+                  // Force refresh the planetary hours
+                  setPlanetaryHours([]);
+                  setSelectedDate(new Date(selectedDate));
+                }}
+              >
+                <Text style={styles.retryButtonText}>Refresh</Text>
+              </TouchableOpacity>
             </View>
           ) : (
             <>
@@ -207,7 +231,10 @@ export default function CalendarScreen() {
                 {planetaryHours
                   .filter(hour => hour.isDay)
                   .map((hour, index) => (
-                    <PlanetaryHourListItem key={`day-${index}`} hour={hour} />
+                    <PlanetaryHourListItem 
+                      key={`day-${index}`} 
+                      hour={hour}
+                    />
                   ))}
               </View>
               
@@ -219,9 +246,23 @@ export default function CalendarScreen() {
                 {planetaryHours
                   .filter(hour => !hour.isDay)
                   .map((hour, index) => (
-                    <PlanetaryHourListItem key={`night-${index}`} hour={hour} />
+                    <PlanetaryHourListItem 
+                      key={`night-${index}`} 
+                      hour={hour}
+                    />
                   ))}
               </View>
+              
+              <TouchableOpacity 
+                style={[styles.retryButton, { backgroundColor: colors.primary, marginTop: 20 }]}
+                onPress={() => {
+                  // Force refresh the planetary hours
+                  setPlanetaryHours([]);
+                  setSelectedDate(new Date(selectedDate));
+                }}
+              >
+                <Text style={styles.retryButtonText}>Refresh Planetary Hours</Text>
+              </TouchableOpacity>
             </>
           )}
         </ScrollView>
