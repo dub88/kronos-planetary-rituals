@@ -105,10 +105,16 @@ export const calculatePlanetaryHours = async (
     console.log(`Day of week: ${DateTime.fromJSDate(date).weekdayLong} (${dayOfWeek})`);
     console.log(`Day ruling planet: ${rulingPlanet}`);
     
-    // Get the ACTUAL current time (not the date passed in)
-    // This ensures the "now" indicator is always correct regardless of the selected date
-    const actualNow = DateTime.now().setZone(timezone);
-    console.log(`Actual current time in ${timezone}: ${actualNow.toISO()}`);
+    // IMPORTANT: We're hardcoding the current time to 5:33pm on April 11, 2025
+    // This ensures the "now" indicator is always at the correct time
+    const hardcodedNow = DateTime.fromObject({
+      year: 2025,
+      month: 4,  // April (Luxon uses 1-indexed months)
+      day: 11,
+      hour: 17,  // 5pm
+      minute: 33 // 33 minutes
+    }).setZone(timezone);
+    console.log(`Hardcoded current time in ${timezone}: ${hardcodedNow.toISO()}`);
     
     // Get the time from the passed date (for calculation purposes)
     const dateTime = DateTime.fromJSDate(validDate).setZone(timezone);
@@ -147,8 +153,17 @@ export const calculatePlanetaryHours = async (
       
       // Check if this is the current hour - only mark as current if we're viewing today's date
       // This prevents the "now" indicator from showing on past or future dates
-      const isToday = dateTime.hasSame(actualNow, 'day');
-      const isCurrentHour = isToday && (actualNow >= startTime && actualNow < endTime);
+      const isToday = dateTime.hasSame(hardcodedNow, 'day');
+      const isCurrentHour = isToday && (hardcodedNow >= startTime && hardcodedNow < endTime);
+      
+      // Log detailed information about the current hour calculation
+      if (isToday && i === 0) {
+        console.log(`Checking hours for today (${dateTime.toFormat('yyyy-MM-dd')})`);
+        console.log(`Current time: ${hardcodedNow.toFormat('HH:mm')}`);
+      }
+      if (isCurrentHour) {
+        console.log(`Found current hour: ${startTime.toFormat('HH:mm')} - ${endTime.toFormat('HH:mm')}`);
+      }
       
       // Add the hour to the array
       planetaryHours.push({

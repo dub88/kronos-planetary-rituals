@@ -118,10 +118,24 @@ export const getCurrentHour = (): number => {
 
 // Check if a date is today
 export const isToday = (date: Date): boolean => {
+  // Create a fresh date object for today
   const today = new Date();
-  return date.getDate() === today.getDate() &&
-    date.getMonth() === today.getMonth() &&
-    date.getFullYear() === today.getFullYear();
+  
+  // Extract date components for comparison (ignoring time)
+  const todayYear = today.getFullYear();
+  const todayMonth = today.getMonth();
+  const todayDay = today.getDate();
+  
+  const dateYear = date.getFullYear();
+  const dateMonth = date.getMonth();
+  const dateDay = date.getDate();
+  
+  console.log('dateUtils.isToday - Today:', todayYear, todayMonth, todayDay);
+  console.log('dateUtils.isToday - Comparing with:', dateYear, dateMonth, dateDay);
+  
+  return dateDay === todayDay && 
+         dateMonth === todayMonth && 
+         dateYear === todayYear;
 };
 
 // Add days to a date
