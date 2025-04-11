@@ -64,7 +64,8 @@ export const calculatePlanetaryHours = async (
 
     // Get the day of week (1-7, where 1 is Monday in Luxon)
     // Convert to 0-6 where 0 is Sunday for our planetaryDayRulers array
-    const dayOfWeek = dt.weekday % 7; // Convert Luxon's 1-7 to 0-6 where 0 is Sunday
+    // Correct calculation: Sunday (7 in Luxon) should be index 0
+    const dayOfWeek = dt.weekday === 7 ? 0 : dt.weekday % 7;
     const rulingPlanet = planetaryDayRulers[dayOfWeek];
     const rulingPlanetIndex = chaldeanOrder.indexOf(rulingPlanet);
 
@@ -82,10 +83,16 @@ export const calculatePlanetaryHours = async (
     // First hour of the day starts at sunrise and is ruled by the day ruler
     for (let i = 0; i < 24; i++) {
       // Calculate the planet for this hour using the Chaldean order
-      // The first hour of the day is ruled by the day ruler
+      // The first hour of the day (at sunrise) is ruled by the day ruler
       // Then follow the Chaldean order for subsequent hours
-      const planetIndex = (rulingPlanetIndex + i) % 7;
-      const planetName = chaldeanOrder[planetIndex];
+      // The correct formula uses the Chaldean order directly
+      const hourOffset = (rulingPlanetIndex + i) % 7;
+      const planetName = chaldeanOrder[hourOffset];
+      
+      // Log for debugging
+      if (i === 0) {
+        console.log(`First hour ruler (day ruler): ${planetName}`);
+      }
       const isDayHour = i < 12;
       
       // Calculate start and end times for this hour
