@@ -3,6 +3,20 @@ import { getSunrise, getSunset } from 'sunrise-sunset-js';
 import { chaldeanOrder, planetaryDayRulers, planetDayMap } from '../constants/planets';
 import type { PlanetaryHour } from '../../types';
 
+import type { PlanetDay } from '../types';
+
+// Traditional Chaldean order for planetary hours
+// This is the correct sequence for planetary hours
+const PLANETARY_HOUR_SEQUENCE: PlanetDay[] = [
+  'saturn',  // ♄ Saturn
+  'jupiter', // ♃ Jupiter
+  'mars',    // ♂ Mars
+  'sun',     // ☉ Sun
+  'venus',   // ♀ Venus
+  'mercury', // ☿ Mercury
+  'moon'     // ☽ Moon
+];
+
 /**
  * Calculate planetary hours with improved accuracy
  *
@@ -32,7 +46,7 @@ export const calculatePlanetaryHours = async (
     const sunriseToday = getSunrise(validLatitude, validLongitude, today.toJSDate());
     const sunsetToday = getSunset(validLatitude, validLongitude, today.toJSDate());
     
-    // Calculate sunrise and sunset for tomorrow
+    // Calculate sunrise for tomorrow
     const tomorrow = today.plus({ days: 1 });
     const sunriseTomorrow = getSunrise(validLatitude, validLongitude, tomorrow.toJSDate());
     
@@ -62,15 +76,15 @@ export const calculatePlanetaryHours = async (
     console.log('Day Hour Duration (minutes):', dayHourDuration);
     console.log('Night Hour Duration (minutes):', nightHourDuration);
 
-    // Get the day of week (1-7, where 1 is Monday in Luxon)
-    // Convert to 0-6 where 0 is Sunday for our planetaryDayRulers array
-    // Correct calculation: Sunday (7 in Luxon) should be index 0
+    // Get the day of week (0-6, where 0 is Sunday)
+    // Luxon uses 1-7 where 7 is Sunday, so we need to convert
     const dayOfWeek = dt.weekday === 7 ? 0 : dt.weekday % 7;
-    const rulingPlanet = planetaryDayRulers[dayOfWeek];
-    const rulingPlanetIndex = chaldeanOrder.indexOf(rulingPlanet);
-
+    
+    // Get the ruling planet for this day
+    const dayRuler: PlanetDay = planetaryDayRulers[dayOfWeek];
+    
     console.log('Day of week:', dt.weekdayLong, '(', dayOfWeek, ')');
-    console.log('Ruling planet:', rulingPlanet);
+    console.log('Day ruling planet:', dayRuler);
 
     const planetaryHours: PlanetaryHour[] = [];
     
@@ -79,42 +93,46 @@ export const calculatePlanetaryHours = async (
     const isDuringDay = now >= sunriseTime.toMillis() && now < sunsetTime.toMillis();
     console.log('Current time is during:', isDuringDay ? 'day' : 'night');
     
+    // Find the index of the day ruler in the planetary hour sequence
+    // This is crucial for determining the correct sequence of hours
+    const dayRulerIndex = PLANETARY_HOUR_SEQUENCE.indexOf(dayRuler);
+    if (dayRulerIndex === -1) {
+      throw new Error(`Day ruler ${dayRuler} not found in planetary hour sequence`);
+    }
+    
     // Calculate the 24 planetary hours
     // First hour of the day starts at sunrise and is ruled by the day ruler
-    for (let i = 0; i < 24; i++) {
-      // Calculate the planet for this hour using the Chaldean order
-      // The first hour of the day (at sunrise) is ruled by the day ruler
-      // Then follow the Chaldean order for subsequent hours
-      // The correct formula uses the Chaldean order directly
-      const hourOffset = (rulingPlanetIndex + i) % 7;
-      const planetName = chaldeanOrder[hourOffset];
+    for (let hourNumber = 1; hourNumber <= 24; hourNumber++) {
+      // Determine if this is a day hour (1-12) or night hour (13-24)
+      const isDayHour = hourNumber <= 12;
       
-      // Log for debugging
-      if (i === 0) {
-        console.log(`First hour ruler (day ruler): ${planetName}`);
-      }
-      const isDayHour = i < 12;
+      // Calculate the position in the planetary sequence
+      // The first hour of the day is ruled by the day ruler
+      // Each subsequent hour follows the traditional sequence
+      const sequencePosition = (dayRulerIndex + hourNumber - 1) % 7;
+      const planetName: PlanetDay = PLANETARY_HOUR_SEQUENCE[sequencePosition];
       
       // Calculate start and end times for this hour
       let startTime, endTime;
       
       if (isDayHour) {
-        // Day hours start at sunrise and each lasts dayHourDuration
-        startTime = sunriseTime.plus({ minutes: i * dayHourDuration });
+        // Day hours (1-12) start at sunrise and each lasts dayHourDuration
+        const hourIndex = hourNumber - 1; // Convert to 0-based index
+        startTime = sunriseTime.plus({ minutes: hourIndex * dayHourDuration });
         endTime = startTime.plus({ minutes: dayHourDuration });
         
-        // Ensure the last day hour doesn't go past sunset
-        if (i === 11) { // Last day hour
+        // Ensure the last day hour (12) doesn't go past sunset
+        if (hourNumber === 12) {
           endTime = sunsetTime;
         }
       } else {
-        // Night hours start at sunset and each lasts nightHourDuration
-        const nightHourIndex = i - 12; // 0-11 for night hours
+        // Night hours (13-24) start at sunset and each lasts nightHourDuration
+        const nightHourIndex = hourNumber - 13; // Convert to 0-based index (0-11)
         startTime = sunsetTime.plus({ minutes: nightHourIndex * nightHourDuration });
         endTime = startTime.plus({ minutes: nightHourDuration });
         
-        // Ensure the last night hour doesn't go past sunrise
-        if (i === 23) { // Last night hour
+        // Ensure the last night hour (24) doesn't go past sunrise
+        if (hourNumber === 24) {
           endTime = nextSunriseTime;
         }
       }
@@ -124,8 +142,8 @@ export const calculatePlanetaryHours = async (
       
       // Create a planetary hour object that matches the PlanetaryHour interface
       planetaryHours.push({
-        hour: i + 1, // 1-24 hour of the day
-        hourNumber: i + 1,
+        hour: hourNumber, // 1-24 hour of the day
+        hourNumber: hourNumber,
         planet: planetName,
         planetId: planetName,
         period: isDayHour ? 'day' : 'night',
@@ -134,6 +152,12 @@ export const calculatePlanetaryHours = async (
         endTime: endTime.toJSDate(),
         isCurrentHour
       });
+      
+      // Log the first and thirteenth hours for verification
+      if (hourNumber === 1 || hourNumber === 13) {
+        console.log(`Hour ${hourNumber} (${isDayHour ? 'day' : 'night'}) ruler: ${planetName}`);
+        console.log(`  Start: ${startTime.toFormat('HH:mm:ss')}, End: ${endTime.toFormat('HH:mm:ss')}`);
+      }
     }
     
     return planetaryHours;
