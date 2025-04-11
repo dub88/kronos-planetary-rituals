@@ -60,7 +60,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       "mobile-web-app-capable": "yes"
     },
     // PWA configuration
-    templatePath: "./web-build-template.html",
+    templatePath: "./public/index.html",
     name: "Kronos Planetary Rituals",
     shortName: "Kronos",
     lang: "en",
@@ -72,7 +72,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     orientation: "portrait",
     // Include service worker for offline capabilities
     serviceWorker: {
-      src: "./assets/web/service-worker.js",
+      src: "/service-worker.js",
       scope: "/"
     }
   },
