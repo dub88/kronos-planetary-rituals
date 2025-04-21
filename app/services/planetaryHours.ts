@@ -112,9 +112,21 @@ export const calculatePlanetaryHours = async (
     // Get the time from the passed date (for calculation purposes)
     const dateTime = DateTime.fromJSDate(validDate).setZone(timezone);
     
+    // Determine the label for each day
+    const today = DateTime.local().setZone(timezone).startOf('day');
+    const tomorrow = today.plus({ days: 1 });
+    const yesterday = today.minus({ days: 1 });
+
+    const dayLabel = (date: DateTime): string => {
+      if (date.hasSame(today, 'day')) return 'today';
+      if (date.hasSame(tomorrow, 'day')) return 'tomorrow';
+      if (date.hasSame(yesterday, 'day')) return 'yesterday';
+      return '';
+    };
+
     // Array to store the 24 planetary hours
     const planetaryHours: PlanetaryHour[] = [];
-    
+
     // Loop through all 24 hours
     for (let i = 0; i < 24; i++) {
       let startTime: DateTime, endTime: DateTime;
@@ -140,6 +152,9 @@ export const calculatePlanetaryHours = async (
           endTime = nextSunrise;
         }
       }
+      
+      const label = dayLabel(startTime);
+      console.log(`Hour ${i + 1}: ${label}`);
       
       // Assign the planet using the Chaldean order, cycling through with modulo
       const planetName = chaldeanOrder[(startIndex + i) % 7] as PlanetDay;
@@ -168,7 +183,8 @@ export const calculatePlanetaryHours = async (
         isDay: isDayHour,
         startTime: startTime.toJSDate(),
         endTime: endTime.toJSDate(),
-        isCurrentHour
+        isCurrentHour,
+        label
       });
     }
     

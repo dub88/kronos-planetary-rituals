@@ -17,6 +17,7 @@ export type PlanetaryHour = {
   endTime: Date;
   isDayHour: boolean;
   hourNumber: number;
+  label?: string; // Optional label for today, tomorrow, yesterday
 };
 
 // Planet information
