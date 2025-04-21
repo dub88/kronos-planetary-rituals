@@ -6,8 +6,8 @@ const MONTICELLO_LATITUDE = 37.8714;
 const MONTICELLO_LONGITUDE = -109.3425;
 const TIMEZONE = 'America/Denver';
 
-// Today's date (March 7, 2025)
-const TODAY = new Date('2025-03-07T17:15:13-07:00');
+// Today's date
+const TODAY = new Date();
 
 async function testPlanetaryHours() {
   console.log('Testing Planetary Hours Calculation');

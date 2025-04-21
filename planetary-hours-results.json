@@ -1,0 +1,242 @@
+[
+  {
+    "hour": 1,
+    "hourNumber": 1,
+    "planet": "venus",
+    "period": "day",
+    "isDay": true,
+    "startTime": "2025-04-11T13:04:36.545Z",
+    "endTime": "2025-04-11T13:59:43.589Z",
+    "isCurrentHour": false
+  },
+  {
+    "hour": 2,
+    "hourNumber": 2,
+    "planet": "mercury",
+    "period": "day",
+    "isDay": true,
+    "startTime": "2025-04-11T13:59:43.589Z",
+    "endTime": "2025-04-11T14:54:50.633Z",
+    "isCurrentHour": false
+  },
+  {
+    "hour": 3,
+    "hourNumber": 3,
+    "planet": "moon",
+    "period": "day",
+    "isDay": true,
+    "startTime": "2025-04-11T14:54:50.633Z",
+    "endTime": "2025-04-11T15:49:57.677Z",
+    "isCurrentHour": false
+  },
+  {
+    "hour": 4,
+    "hourNumber": 4,
+    "planet": "saturn",
+    "period": "day",
+    "isDay": true,
+    "startTime": "2025-04-11T15:49:57.677Z",
+    "endTime": "2025-04-11T16:45:04.721Z",
+    "isCurrentHour": false
+  },
+  {
+    "hour": 5,
+    "hourNumber": 5,
+    "planet": "jupiter",
+    "period": "day",
+    "isDay": true,
+    "startTime": "2025-04-11T16:45:04.721Z",
+    "endTime": "2025-04-11T17:40:11.765Z",
+    "isCurrentHour": false
+  },
+  {
+    "hour": 6,
+    "hourNumber": 6,
+    "planet": "mars",
+    "period": "day",
+    "isDay": true,
+    "startTime": "2025-04-11T17:40:11.765Z",
+    "endTime": "2025-04-11T18:35:18.809Z",
+    "isCurrentHour": false
+  },
+  {
+    "hour": 7,
+    "hourNumber": 7,
+    "planet": "sun",
+    "period": "day",
+    "isDay": true,
+    "startTime": "2025-04-11T18:35:18.809Z",
+    "endTime": "2025-04-11T19:30:25.853Z",
+    "isCurrentHour": false
+  },
+  {
+    "hour": 8,
+    "hourNumber": 8,
+    "planet": "venus",
+    "period": "day",
+    "isDay": true,
+    "startTime": "2025-04-11T19:30:25.853Z",
+    "endTime": "2025-04-11T20:25:32.897Z",
+    "isCurrentHour": false
+  },
+  {
+    "hour": 9,
+    "hourNumber": 9,
+    "planet": "mercury",
+    "period": "day",
+    "isDay": true,
+    "startTime": "2025-04-11T20:25:32.897Z",
+    "endTime": "2025-04-11T21:20:39.941Z",
+    "isCurrentHour": false
+  },
+  {
+    "hour": 10,
+    "hourNumber": 10,
+    "planet": "moon",
+    "period": "day",
+    "isDay": true,
+    "startTime": "2025-04-11T21:20:39.941Z",
+    "endTime": "2025-04-11T22:15:46.985Z",
+    "isCurrentHour": true
+  },
+  {
+    "hour": 11,
+    "hourNumber": 11,
+    "planet": "saturn",
+    "period": "day",
+    "isDay": true,
+    "startTime": "2025-04-11T22:15:46.985Z",
+    "endTime": "2025-04-11T23:10:54.029Z",
+    "isCurrentHour": false
+  },
+  {
+    "hour": 12,
+    "hourNumber": 12,
+    "planet": "jupiter",
+    "period": "day",
+    "isDay": true,
+    "startTime": "2025-04-11T23:10:54.029Z",
+    "endTime": "2025-04-11T02:03:12.016Z",
+    "isCurrentHour": false
+  },
+  {
+    "hour": 13,
+    "hourNumber": 13,
+    "planet": "mars",
+    "period": "night",
+    "isDay": false,
+    "startTime": "2025-04-11T02:03:12.016Z",
+    "endTime": "2025-04-11T04:58:11.847Z",
+    "isCurrentHour": false
+  },
+  {
+    "hour": 14,
+    "hourNumber": 14,
+    "planet": "sun",
+    "period": "night",
+    "isDay": false,
+    "startTime": "2025-04-11T04:58:11.847Z",
+    "endTime": "2025-04-11T07:53:11.678Z",
+    "isCurrentHour": false
+  },
+  {
+    "hour": 15,
+    "hourNumber": 15,
+    "planet": "venus",
+    "period": "night",
+    "isDay": false,
+    "startTime": "2025-04-11T07:53:11.679Z",
+    "endTime": "2025-04-11T10:48:11.510Z",
+    "isCurrentHour": false
+  },
+  {
+    "hour": 16,
+    "hourNumber": 16,
+    "planet": "mercury",
+    "period": "night",
+    "isDay": false,
+    "startTime": "2025-04-11T10:48:11.510Z",
+    "endTime": "2025-04-11T13:43:11.341Z",
+    "isCurrentHour": false
+  },
+  {
+    "hour": 17,
+    "hourNumber": 17,
+    "planet": "moon",
+    "period": "night",
+    "isDay": false,
+    "startTime": "2025-04-11T13:43:11.342Z",
+    "endTime": "2025-04-11T16:38:11.173Z",
+    "isCurrentHour": false
+  },
+  {
+    "hour": 18,
+    "hourNumber": 18,
+    "planet": "saturn",
+    "period": "night",
+    "isDay": false,
+    "startTime": "2025-04-11T16:38:11.173Z",
+    "endTime": "2025-04-11T19:33:11.004Z",
+    "isCurrentHour": false
+  },
+  {
+    "hour": 19,
+    "hourNumber": 19,
+    "planet": "jupiter",
+    "period": "night",
+    "isDay": false,
+    "startTime": "2025-04-11T19:33:11.005Z",
+    "endTime": "2025-04-11T22:28:10.836Z",
+    "isCurrentHour": true
+  },
+  {
+    "hour": 20,
+    "hourNumber": 20,
+    "planet": "mars",
+    "period": "night",
+    "isDay": false,
+    "startTime": "2025-04-11T22:28:10.836Z",
+    "endTime": "2025-04-12T01:23:10.667Z",
+    "isCurrentHour": false
+  },
+  {
+    "hour": 21,
+    "hourNumber": 21,
+    "planet": "sun",
+    "period": "night",
+    "isDay": false,
+    "startTime": "2025-04-12T01:23:10.668Z",
+    "endTime": "2025-04-12T04:18:10.499Z",
+    "isCurrentHour": false
+  },
+  {
+    "hour": 22,
+    "hourNumber": 22,
+    "planet": "venus",
+    "period": "night",
+    "isDay": false,
+    "startTime": "2025-04-12T04:18:10.499Z",
+    "endTime": "2025-04-12T07:13:10.330Z",
+    "isCurrentHour": false
+  },
+  {
+    "hour": 23,
+    "hourNumber": 23,
+    "planet": "mercury",
+    "period": "night",
+    "isDay": false,
+    "startTime": "2025-04-12T07:13:10.331Z",
+    "endTime": "2025-04-12T10:08:10.162Z",
+    "isCurrentHour": false
+  },
+  {
+    "hour": 24,
+    "hourNumber": 24,
+    "planet": "moon",
+    "period": "night",
+    "isDay": false,
+    "startTime": "2025-04-12T10:08:10.162Z",
+    "endTime": "2025-04-12T13:03:09.994Z",
+    "isCurrentHour": false
+  }
+]

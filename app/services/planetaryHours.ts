@@ -206,6 +206,9 @@ export const findCurrentPlanetaryHour = async (
     // Get the current time in the specified timezone
     const now = DateTime.fromJSDate(validDate).setZone(timezone);
     console.log(`Current time in ${timezone}: ${now.toISO()}`);
+    console.log(`Current local time: ${DateTime.local().toISO()}`);
+    console.log(`Timezone: ${timezone}`);
+    console.log(`Now variable: ${now.toISO()}`);
     
     // Calculate all planetary hours for the day
     console.log('Calculating planetary hours for current day...');
