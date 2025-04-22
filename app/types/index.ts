@@ -12,10 +12,8 @@ import type {
   SettingsUpdate
 } from './database';
 
-// Planetary types
 export type PlanetDay = 'sun' | 'moon' | 'mars' | 'mercury' | 'jupiter' | 'venus' | 'saturn';
 
-// Planet info interface for the planetDayMap
 export interface PlanetInfo {
   name: string;
   ruler: PlanetDay;
@@ -39,10 +37,9 @@ export interface PlanetaryHour {
   startTime: Date;
   endTime: Date;
   isCurrentHour: boolean;
-  isDayHour?: boolean; // Added for compatibility with PlanetaryHourBase
+  isDayHour?: boolean;
 }
 
-// Planet interface for the planets array
 export interface Planet {
   id: PlanetDay;
   name: string;
@@ -54,7 +51,6 @@ export interface Planet {
   ritual: string;
 }
 
-// Day Theme type for planetary day themes
 export interface DayTheme {
   name: string;
   description: string;
@@ -67,10 +63,10 @@ export interface DayTheme {
   symbol: string;
   planetId: PlanetDay;
   correspondences: {
-    colors: string[];
-    herbs: string[];
-    incense: string[];
-    crystals: string[];
+    colors: Array<string>;
+    herbs: Array<string>;
+    incense: Array<string>;
+    crystals: Array<string>;
     metal: string;
   };
   motifs: {
@@ -96,7 +92,6 @@ export interface DayTheme {
   };
 }
 
-// Astrological types
 export interface PlanetaryPosition {
   planet: PlanetDay;
   sign: string;
@@ -111,7 +106,6 @@ interface PlanetaryDignityType {
 
 export type PlanetaryDignity = PlanetaryDignityType;
 
-// Location type
 export interface Location {
   latitude: number;
   longitude: number;
@@ -136,14 +130,6 @@ export type {
   SettingsUpdate
 };
 
-// Supabase types
-
-
-
-
-
-
-// Ritual types
 export interface Ritual {
   id: string;
   name: string;
@@ -167,7 +153,6 @@ export interface Ritual {
   videoUrl?: string;
 }
 
-// Theme types
 export interface ThemeColors {
   primary: string;
   secondary: string;
@@ -187,7 +172,6 @@ export interface Theme {
   colors: ThemeColors;
 }
 
-// Navigation types
 export type RootStackParamList = {
   '(tabs)': undefined;
   'auth': undefined;
@@ -196,11 +180,5 @@ export type RootStackParamList = {
   'ritual/[id]': { id: string };
 };
 
-// Create AppTypes object for default export
-const AppTypes = {
-  // This is a placeholder object to satisfy the default export requirement
-  // All actual types are exported as named exports above
-};
-
-// Default export for the types
+const AppTypes = {};
 export default AppTypes;
