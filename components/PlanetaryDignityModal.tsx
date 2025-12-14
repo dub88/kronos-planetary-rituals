@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, View, Modal, TouchableOpacity, ScrollView } from 'react-native';
 import { X } from 'lucide-react-native';
 import { useTheme } from '@/components/ThemeProvider';
-import { PlanetPosition } from '@/types';
+import { PlanetaryPosition } from '@/types';
 import { getZodiacSymbol, getDignityDescription } from '@/constants/dignities';
 import PlanetSymbol from '@/components/ui/PlanetSymbol';
 import { getPlanetById } from '@/constants/planets';
@@ -10,7 +10,7 @@ import { getPlanetById } from '@/constants/planets';
 interface PlanetaryDignityModalProps {
   visible: boolean;
   onClose: () => void;
-  planetPosition: PlanetPosition;
+  planetPosition: PlanetaryPosition;
   dignity: string | null;
 }
 
@@ -24,7 +24,7 @@ const PlanetaryDignityModal: React.FC<PlanetaryDignityModalProps> = ({
   
   if (!planetPosition) return null;
   
-  const planet = getPlanetById(planetPosition.planetId);
+  const planet = getPlanetById(planetPosition.planet);
   const zodiacSymbol = getZodiacSymbol(planetPosition.sign);
   
   // Get color based on dignity
@@ -56,7 +56,7 @@ const PlanetaryDignityModal: React.FC<PlanetaryDignityModalProps> = ({
       onRequestClose={onClose}
     >
       <View style={styles.modalOverlay}>
-        <View style={[styles.modalContent, { backgroundColor: colors.card }]}>
+        <View style={[styles.modalContent, { backgroundColor: colors.surface, borderColor: colors.border, borderWidth: 1 }]}>
           <View style={styles.modalHeader}>
             <Text style={[styles.modalTitle, { color: colors.text, fontFamily: 'System' }]}>
               Planetary Dignity
@@ -70,7 +70,7 @@ const PlanetaryDignityModal: React.FC<PlanetaryDignityModalProps> = ({
             <View style={styles.planetInfo}>
               <View style={styles.planetSymbolContainer}>
                 <PlanetSymbol
-                  planetId={planetPosition.planetId}
+                  planetId={planetPosition.planet}
                   size={48}
                   color={planet.color}
                   variant="glowing"
@@ -125,7 +125,7 @@ const PlanetaryDignityModal: React.FC<PlanetaryDignityModalProps> = ({
               </Text>
               
               <Text style={[styles.adviceText, { color: colors.text, fontFamily: 'System' }]}>
-                {getDignityAdvice(dignity, planetPosition.planetId)}
+                {getDignityAdvice(dignity, planetPosition.planet)}
               </Text>
             </View>
           </ScrollView>

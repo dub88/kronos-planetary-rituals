@@ -14,7 +14,13 @@ const DayThemeModal = ({ visible, onClose }: DayThemeModalProps) => {
   const { currentDayTheme, colors, isDark } = useTheme();
   
   // Safely get gradient colors with fallback
-  const gradientColors = currentDayTheme?.gradient || ['#FFFFFF', '#EEEEEE'];
+  const gradientColors = (() => {
+    const g = currentDayTheme?.gradient;
+    if (g && g.length >= 2) {
+      return [g[0], g[1], ...g.slice(2)] as [string, string, ...string[]];
+    }
+    return ['#FFFFFF', '#EEEEEE'] as [string, string];
+  })();
   
   // Safely get symbol with fallback
   const symbol = currentDayTheme?.symbol || 
@@ -41,7 +47,7 @@ const DayThemeModal = ({ visible, onClose }: DayThemeModalProps) => {
         <View style={[
           styles.modalContainer, 
           { 
-            backgroundColor: isDark ? colors.card : colors.background,
+            backgroundColor: isDark ? colors.surface : colors.background,
             borderColor: colors.border,
           }
         ]}>

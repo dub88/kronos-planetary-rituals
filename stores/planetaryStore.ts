@@ -1,7 +1,8 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { PlanetDay, PlanetaryHour, PlanetaryPosition as TypesPlanetaryPosition } from '../types';
+import type { PlanetaryHour as AppPlanetaryHour } from '../app/app-types';
+import { PlanetDay, PlanetaryHour as TypesPlanetaryHour, PlanetaryPosition as TypesPlanetaryPosition } from '../types';
 import { getPlanetaryDayRuler } from '../utils/planetaryHours';
 import { calculatePlanetaryHours } from '../app/services/planetaryHours';
 import { getCurrentPlanetaryPositions } from '../app/services/astrology';
@@ -15,9 +16,9 @@ interface PlanetaryPosition extends TypesPlanetaryPosition {
 }
 
 interface PlanetaryState {
-  hours: PlanetaryHour[];
+  hours: TypesPlanetaryHour[];
   currentDayRuler: PlanetDay;
-  currentHour: PlanetaryHour | null;
+  currentHour: TypesPlanetaryHour | null;
   lastUpdated: string | null;
   isLoading: boolean;
   error: string | null;
@@ -42,6 +43,19 @@ export const usePlanetaryStore = create<PlanetaryState>()(
       
       fetchPlanetaryHours: async (latitude, longitude) => {
         set({ isLoading: true, error: null });
+
+        const mapHour = (hour: AppPlanetaryHour): TypesPlanetaryHour => ({
+          hour: hour.hourNumber,
+          hourNumber: hour.hourNumber,
+          planet: hour.planet as PlanetDay,
+          planetId: hour.planet as PlanetDay,
+          period: hour.period,
+          isDay: hour.isDayHour,
+          startTime: hour.startTime,
+          endTime: hour.endTime,
+          isCurrentHour: hour.isCurrentHour,
+          isDayHour: hour.isDayHour,
+        });
         
         try {
           // Get the current day's planetary ruler
@@ -57,15 +71,17 @@ export const usePlanetaryStore = create<PlanetaryState>()(
             new Date(), 
             timezone
           );
+
+          const mappedHours = hours.map(mapHour);
           
           // Find the current hour
           const now = new Date();
-          const currentHour = hours.find(hour => 
+          const currentHour = mappedHours.find(hour => 
             now >= hour.startTime && now < hour.endTime
           ) || null;
           
           set({ 
-            hours,
+            hours: mappedHours,
             currentDayRuler: dayRuler,
             currentHour,
             lastUpdated: new Date().toISOString(),

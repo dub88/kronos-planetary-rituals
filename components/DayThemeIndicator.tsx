@@ -40,7 +40,13 @@ const DayThemeIndicator = ({ compact = false, onPress }: DayThemeIndicatorProps)
   const borderStyle = getBorderStyle();
   
   // Safely get gradient colors with fallback
-  const gradientColors = currentDayTheme?.gradient || ['#FFFFFF', '#EEEEEE'];
+  const gradientColors = (() => {
+    const g = currentDayTheme?.gradient;
+    if (g && g.length >= 2) {
+      return [g[0], g[1], ...g.slice(2)] as [string, string, ...string[]];
+    }
+    return ['#FFFFFF', '#EEEEEE'] as [string, string];
+  })();
   
   // Safely get symbol with fallback
   const symbol = currentDayTheme?.symbol || 

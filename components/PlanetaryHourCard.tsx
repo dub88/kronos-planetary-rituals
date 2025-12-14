@@ -8,7 +8,7 @@ import { formatHourTime } from '@/utils/planetaryHours';
 import { getPlanetById } from '@/constants/planets';
 
 const PlanetaryHourCard = () => {
-  const { colors } = useTheme();
+  const { colors, isDark } = useTheme();
   const { fetchPlanetaryHours, hours, currentHour, isLoading } = usePlanetaryStore();
   const { location } = useLocationStore();
   const [timeNow, setTimeNow] = useState(new Date());
@@ -95,7 +95,7 @@ const PlanetaryHourCard = () => {
   
   if (isLoading) {
     return (
-      <View style={[styles.container, { backgroundColor: colors.card }]}>
+      <View style={[styles.container, { backgroundColor: colors.surface, borderColor: colors.border, borderWidth: 1 }]}>
         <Text style={[styles.loadingText, { color: colors.textSecondary }]}>
           Loading planetary hours...
         </Text>
@@ -105,7 +105,7 @@ const PlanetaryHourCard = () => {
   
   if (!currentHour) {
     return (
-      <View style={[styles.container, { backgroundColor: colors.card }]}>
+      <View style={[styles.container, { backgroundColor: colors.surface, borderColor: colors.border, borderWidth: 1 }]}>
         <Text style={[styles.errorText, { color: colors.textSecondary }]}>
           Could not determine current planetary hour.
         </Text>
@@ -116,7 +116,7 @@ const PlanetaryHourCard = () => {
             location?.longitude
           )}
         >
-          <Text style={styles.retryButtonText}>Retry</Text>
+          <Text style={[styles.retryButtonText, { color: colors.onPrimary }]}>Retry</Text>
         </TouchableOpacity>
       </View>
     );
@@ -125,7 +125,7 @@ const PlanetaryHourCard = () => {
   return (
     <View style={[
       styles.container, 
-      { backgroundColor: colors.card },
+      { backgroundColor: colors.surface },
       getBorderStyle()
     ]}>
       <View style={styles.header}>
@@ -162,7 +162,11 @@ const PlanetaryHourCard = () => {
           
           <View style={[
             styles.timeRemainingContainer, 
-            { backgroundColor: `${colors.primary}20` }
+            {
+              backgroundColor: isDark ? colors.surface2 : `${colors.primary}14`,
+              borderColor: `${colors.primary}26`,
+              borderWidth: 1,
+            }
           ]}>
             <Text style={[styles.timeRemainingLabel, { color: colors.textSecondary }]}>
               Remaining
@@ -215,6 +219,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     marginLeft: 8,
+    fontFamily: 'Inter-SemiBold',
   },
   locationContainer: {
     flexDirection: 'row',
@@ -223,6 +228,7 @@ const styles = StyleSheet.create({
   locationText: {
     fontSize: 12,
     marginLeft: 4,
+    fontFamily: 'Inter-Regular',
   },
   content: {
     padding: 16,
@@ -241,9 +247,11 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 4,
+    fontFamily: 'Inter-Bold',
   },
   hourTime: {
     fontSize: 14,
+    fontFamily: 'Inter-Regular',
   },
   timeRemainingContainer: {
     padding: 8,
@@ -253,10 +261,12 @@ const styles = StyleSheet.create({
   timeRemainingLabel: {
     fontSize: 12,
     marginBottom: 2,
+    fontFamily: 'Inter-Regular',
   },
   timeRemainingValue: {
     fontSize: 16,
     fontWeight: 'bold',
+    fontFamily: 'Inter-Bold',
   },
   nextHourContainer: {
     flexDirection: 'row',
@@ -267,6 +277,7 @@ const styles = StyleSheet.create({
   nextHourLabel: {
     fontSize: 14,
     marginRight: 8,
+    fontFamily: 'Inter-Regular',
   },
   nextHourInfo: {
     flex: 1,
@@ -277,17 +288,21 @@ const styles = StyleSheet.create({
   nextPlanetName: {
     fontSize: 16,
     fontWeight: '500',
+    fontFamily: 'Inter-Medium',
   },
   nextHourTime: {
     fontSize: 14,
+    fontFamily: 'Inter-Regular',
   },
   loadingText: {
     padding: 16,
     textAlign: 'center',
+    fontFamily: 'Inter-Regular',
   },
   errorText: {
     padding: 16,
     textAlign: 'center',
+    fontFamily: 'Inter-Regular',
   },
   retryButton: {
     alignSelf: 'center',
@@ -297,8 +312,8 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   retryButtonText: {
-    color: 'white',
     fontWeight: '600',
+    fontFamily: 'Inter-SemiBold',
   },
 });
 

@@ -676,7 +676,7 @@ export default function ProfileScreen() {
         onRequestClose={() => setShowSignSelector(false)}
       >
         <View style={styles.modalOverlay}>
-          <View style={[styles.modalContent, { backgroundColor: colors.card }]}>
+          <View style={[styles.modalContent, { backgroundColor: colors.surface, borderColor: colors.border, borderWidth: 1 }]}>
             <View style={styles.modalHeader}>
               <Text style={[styles.modalTitle, { color: colors.text }]}>
                 Select Your {signType === 'sun' ? 'Sun' : signType === 'moon' ? 'Moon' : 'Rising'} Sign

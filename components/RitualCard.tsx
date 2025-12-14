@@ -59,6 +59,14 @@ const RitualCard = ({
   const handlePress = () => {
     router.push(`/ritual/${id}`);
   };
+
+  const gradientColors = (() => {
+    const g = currentDayTheme?.gradient;
+    if (g && g.length >= 2) {
+      return [g[0], g[1], ...g.slice(2)] as [string, string, ...string[]];
+    }
+    return ['#FFFFFF', '#EEEEEE'] as [string, string];
+  })();
   
   return (
     <TouchableOpacity 
@@ -66,7 +74,7 @@ const RitualCard = ({
         styles.container, 
         { 
           borderRadius,
-          backgroundColor: isDark ? colors.card : colors.background,
+          backgroundColor: isDark ? colors.surface : colors.background,
           borderColor: colors.border,
         }
       ]}
@@ -75,7 +83,7 @@ const RitualCard = ({
     >
       {/* Header with gradient */}
       <LinearGradient
-        colors={currentDayTheme?.gradient || ['#FFFFFF', '#EEEEEE']}
+        colors={gradientColors}
         style={[styles.header, { borderTopLeftRadius: borderRadius, borderTopRightRadius: borderRadius }]}
       >
         <Text style={styles.title}>{title}</Text>

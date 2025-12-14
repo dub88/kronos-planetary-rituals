@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Ritual } from '@/types';
+import { RitualDefinition } from '@/types';
 import { RitualLog } from '@/app/types/database';
 import { getRitualLogs, addRitualLog } from '@/services/supabase';
 import { useAuthStore } from './authStore';
@@ -14,7 +14,7 @@ interface CompletedRitual extends RitualLog {}
 const mockCompletedRituals: RitualLog[] = [];
 
 interface RitualState {
-  rituals: Ritual[];
+  rituals: RitualDefinition[];
   completedRituals: RitualLog[];
   loading: boolean;
   error: string | null;
@@ -23,7 +23,7 @@ interface RitualState {
   fetchRituals: () => Promise<void>;
   fetchCompletedRituals: () => Promise<void>;
   completeRitual: (ritualData: { id: string, planetId: string, completedAt: string, notes?: string, rating?: number }) => Promise<void>;
-  getRitualById: (id: string) => Ritual | undefined;
+  getRitualById: (id: string) => RitualDefinition | undefined;
   clearRituals: () => void;
 }
 

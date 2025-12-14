@@ -14,6 +14,7 @@ import { hymns } from '@/constants/hymns';
 import CandleAnimation from '@/components/CandleAnimation';
 import { getZodiacSymbol } from '@/constants/dignities';
 import { getPlanetaryDignity } from '@/utils/planetaryHours';
+import type { PlanetDay } from '@/types';
 
 export default function RitualScreen() {
   const { id } = useLocalSearchParams();
@@ -21,13 +22,18 @@ export default function RitualScreen() {
   const { colors } = useTheme();
   const { planetPositions, fetchPlanetaryPositions } = usePlanetaryStore();
   const { completeRitual } = useRitualStore();
+
+  const asPlanetDay = (value: string): PlanetDay => {
+    const valid: PlanetDay[] = ['sun', 'moon', 'mars', 'mercury', 'jupiter', 'venus', 'saturn'];
+    return (valid as string[]).includes(value) ? (value as PlanetDay) : 'sun';
+  };
   
   const [currentStep, setCurrentStep] = useState(0);
   const [showHymn, setShowHymn] = useState(false);
   const [isCompleting, setIsCompleting] = useState(false);
   
   // Find the planet by ID with fallback
-  const planetId = Array.isArray(id) ? id[0] : id || 'sun';
+  const planetId = asPlanetDay((Array.isArray(id) ? id[0] : id) || 'sun');
   const planet = getPlanetById(planetId) || {
     id: planetId,
     name: planetId.charAt(0).toUpperCase() + planetId.slice(1),
@@ -40,7 +46,7 @@ export default function RitualScreen() {
   const hymn = hymns.find(h => h.planetId === planetId);
   
   // Find the current position of the planet
-  const planetPosition = planetPositions.find(p => p.planetId === planetId);
+  const planetPosition = planetPositions.find(p => p.planet === planetId);
   
   // Get the planetary dignity if position is available
   const dignity = planetPosition ? getPlanetaryDignity(planetId, planetPosition.sign) : null;

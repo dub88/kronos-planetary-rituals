@@ -48,7 +48,7 @@ const DailyThemeContainer = ({
   const gradientMiddle = currentDayTheme?.colors?.gradientMiddle || colors.background;
   const gradientEnd = currentDayTheme?.colors?.gradientEnd || colors.background;
   
-  const gradientColors = [gradientStart, gradientMiddle, gradientEnd];
+  const gradientColors = [gradientStart, gradientMiddle, gradientEnd] as [string, string, string];
   
   return (
     <View style={[

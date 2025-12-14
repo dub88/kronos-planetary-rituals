@@ -48,7 +48,7 @@ const PlanetaryDignityChart = () => {
           Current Planetary Dignities
         </Text>
         <TouchableOpacity 
-          style={[styles.infoButton, { backgroundColor: colors.card }]}
+          style={[styles.infoButton, { backgroundColor: colors.surface2, borderColor: colors.border, borderWidth: 1 }]}
           onPress={toggleInfo}
         >
           <Info size={16} color={colors.primary} />
@@ -56,7 +56,7 @@ const PlanetaryDignityChart = () => {
       </View>
       
       {showInfo && (
-        <View style={[styles.infoBox, { backgroundColor: colors.card, borderColor: colors.border }]}>
+        <View style={[styles.infoBox, { backgroundColor: colors.surface2, borderColor: colors.border }]}>
           <Text style={[styles.infoText, { color: colors.text, fontFamily: 'System' }]}>
             Planetary dignities show the strength of a planet in a particular zodiac sign:
           </Text>
@@ -92,7 +92,7 @@ const PlanetaryDignityChart = () => {
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.scrollView}>
         <View style={styles.chartContainer}>
           {planets.map(planet => {
-            const position = planetPositions.find(p => p.planetId === planet.id);
+            const position = planetPositions.find(p => p.planet === planet.id);
             const dignity = position ? getPlanetaryDignity(planet.id, position.sign) : null;
             const zodiacSymbol = position ? getZodiacSymbol(position.sign) : null;
             

@@ -23,19 +23,19 @@ const GothicCard = ({
   const { colors, currentDayTheme } = useTheme();
   
   // Use provided color or default from theme
-  const cardColor = color || colors.card;
+  const cardColor = color || colors.surface2 || colors.surface;
   
   // Determine gradient colors based on variant
   const getGradientColors = () => {
     switch (variant) {
       case 'parchment':
-        return [colors.card, colors.card, colors.card];
+        return [colors.surface2 || colors.surface, colors.surface, colors.surface];
       case 'iron':
-        return [colors.card, colors.card, colors.card];
+        return [colors.surface2 || colors.surface, colors.surface, colors.surface];
       case 'ritual':
-        return [cardColor, colors.card, colors.card];
+        return [cardColor, colors.surface, colors.surface];
       default:
-        return [cardColor, colors.card];
+        return [cardColor, colors.surface];
     }
   };
   

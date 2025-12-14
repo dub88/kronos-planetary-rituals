@@ -2,7 +2,7 @@
  * @jest-environment node
  */
 import { jest } from '@jest/globals';
-import type { PlanetaryHour } from '../types';
+import type { PlanetaryHour } from '../app-types';
 import type { UserSettings } from '../services/settings';
 
 // Mock required modules
@@ -22,17 +22,25 @@ jest.mock('../services/planetaryHours', () => {
     const planetNames: Array<'sun' | 'moon' | 'mars' | 'mercury' | 'jupiter' | 'venus' | 'saturn'> = 
       ['sun', 'moon', 'mars', 'mercury', 'jupiter', 'venus', 'saturn'];
     
+    const isDayHour = i < 12;
+
     return {
+      hourNumber: i + 1,
       planet: planetNames[i % 7],
+      planetId: planetNames[i % 7],
+      period: isDayHour ? 'day' : 'night',
+      isDayHour,
       startTime,
       endTime,
-      hourNumber: i + 1,
-      isDayHour: i < 12
+      isCurrentHour: false,
+      label: 'today'
     };
   });
   
   return {
-    calculatePlanetaryHours: jest.fn().mockResolvedValue(mockPlanetaryHours)
+    calculatePlanetaryHours: jest
+      .fn<() => Promise<PlanetaryHour[]>>()
+      .mockResolvedValue(mockPlanetaryHours)
   };
 });
 
@@ -115,7 +123,7 @@ describe('Planetary Hours Calculation', () => {
     };
 
     const mockUserResponse: UserResponse = {
-      data: { user: mockSession.data.session.user },
+      data: { user: mockSession.data!.session.user },
       error: null
     };
 

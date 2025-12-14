@@ -199,7 +199,7 @@ export default function SettingsScreen() {
     control: React.ReactNode
   ) => {
     return (
-      <View style={[styles.settingItem, { backgroundColor: colors.card }]}>
+      <View style={[styles.settingItem, { backgroundColor: colors.surface, borderColor: colors.border, borderWidth: 1 }]}>
         <View style={[styles.settingIcon, { backgroundColor: `${colors.text}10` }]}>
           {icon}
         </View>
@@ -219,7 +219,7 @@ export default function SettingsScreen() {
   ) => {
     return (
       <TouchableOpacity 
-        style={[styles.linkItem, { backgroundColor: colors.card }]} 
+        style={[styles.linkItem, { backgroundColor: colors.surface, borderColor: colors.border, borderWidth: 1 }]} 
         onPress={onPress}
       >
         <View style={[styles.settingIcon, { backgroundColor: `${colors.text}10` }]}>

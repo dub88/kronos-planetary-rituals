@@ -101,8 +101,8 @@ export const useLocationStore = create<LocationState>()(
                   latitude,
                   longitude,
                   name: locationName,
-                  city: geocode[0]?.city,
-                  country: geocode[0]?.country,
+                  city: geocode[0]?.city ?? undefined,
+                  country: geocode[0]?.country ?? undefined,
                 },
                 isLoading: false,
               });

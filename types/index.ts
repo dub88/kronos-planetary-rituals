@@ -42,6 +42,9 @@ export interface Location {
   latitude: number;
   longitude: number;
   name?: string;
+  city?: string;
+  region?: string;
+  country?: string;
   timestamp?: number;
 }
 
@@ -94,6 +97,17 @@ export interface Ritual {
   planetId: PlanetDay;
   completedAt: string;
   notes?: string;
+}
+
+export interface RitualDefinition {
+  id: string;
+  name: string;
+  description: string;
+  planet: string;
+  duration: number;
+  bestTime: string;
+  materials: string[];
+  steps: string[];
 }
 
 // Theme types

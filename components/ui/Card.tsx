@@ -24,7 +24,7 @@ const Card = ({
   onPress,
   accessibilityLabel
 }: CardProps) => {
-  const { colors, currentDayTheme } = useTheme();
+  const { colors, currentDayTheme, isDark } = useTheme();
   
   // Get card styles based on variant
   const getCardStyles = () => {
@@ -60,7 +60,7 @@ const Card = ({
         return {
           ...baseStyles,
           borderColor: color || colors.border,
-          backgroundColor: 'transparent',
+          backgroundColor: colors.surface,
         };
       case 'filled':
         return {
@@ -70,7 +70,7 @@ const Card = ({
       default:
         return {
           ...baseStyles,
-          backgroundColor: colors.card,
+          backgroundColor: colors.surface,
         };
     }
   };
@@ -103,11 +103,22 @@ const Card = ({
   
   // Render card with or without gradient
   if (withGradient) {
+    const hexToRgba = (value: string, alpha: number) => {
+      const hex = value.replace('#', '').trim();
+      if (hex.length !== 6) return value;
+      const r = parseInt(hex.slice(0, 2), 16);
+      const g = parseInt(hex.slice(2, 4), 16);
+      const b = parseInt(hex.slice(4, 6), 16);
+      return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+    };
+
+    const accent = currentDayTheme?.colors?.primary || colors.primary;
+
     // Define default gradient colors if theme doesn't provide them
     const gradientColors = [
-      currentDayTheme?.colors?.gradientStart || colors.background,
-      currentDayTheme?.colors?.gradientMiddle || colors.card,
-      currentDayTheme?.colors?.gradientEnd || colors.background
+      isDark ? hexToRgba(accent, 0.22) : (currentDayTheme?.colors?.gradientStart || colors.background),
+      isDark ? hexToRgba(accent, 0.08) : (currentDayTheme?.colors?.gradientMiddle || colors.surface2 || colors.surface),
+      isDark ? hexToRgba(accent, 0.16) : (currentDayTheme?.colors?.gradientEnd || colors.background)
     ] as readonly [string, string, string];
     
     return (
@@ -116,7 +127,7 @@ const Card = ({
           colors={gradientColors}
           start={{ x: 0, y: 0 }}
           end={{ x: 0, y: 1 }}
-          style={styles.gradient}
+          style={[styles.gradient, { backgroundColor: colors.surface }]}
         >
           {renderContent()}
         </LinearGradient>

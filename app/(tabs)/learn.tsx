@@ -312,7 +312,7 @@ export default function LearnScreen() {
                   style={[
                     styles.planetCard, 
                     { 
-                      backgroundColor: colors.card,
+                      backgroundColor: colors.surface,
                       borderColor: planetInfo.color || colors.text,
                       borderWidth: 2,
                     },
@@ -385,7 +385,7 @@ export default function LearnScreen() {
         {topics.map(topic => (
           <TouchableOpacity
             key={topic.id}
-            style={[styles.topicCard, { backgroundColor: colors.card }]}
+            style={[styles.topicCard, { backgroundColor: colors.surface, borderColor: colors.border, borderWidth: 1 }]}
             onPress={() => setSelectedTopic(topic.id)}
           >
             <View style={styles.topicCardContent}>
@@ -539,7 +539,7 @@ const createStyles = (colors: any) => StyleSheet.create({
   },
   hymnsList: {
     marginTop: 24,
-    backgroundColor: colors.card,
+    backgroundColor: colors.surface,
     borderRadius: 12,
     padding: 16,
   },
@@ -564,7 +564,7 @@ const createStyles = (colors: any) => StyleSheet.create({
   },
   backButton: {
     marginTop: 24,
-    backgroundColor: colors.card,
+    backgroundColor: colors.surface,
     padding: 12,
     borderRadius: 8,
     alignItems: 'center',

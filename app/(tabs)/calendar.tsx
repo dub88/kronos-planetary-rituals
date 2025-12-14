@@ -155,7 +155,7 @@ export default function CalendarScreen() {
         </Text>
         
         <TouchableOpacity 
-          style={[styles.locationButton, { backgroundColor: colors.card }]}
+          style={[styles.locationButton, { backgroundColor: colors.surface, borderColor: colors.border, borderWidth: 1 }]}
           onPress={() => setShowLocationPrompt(true)}
         >
           <MapPin size={16} color={colors.primary} />
@@ -165,7 +165,7 @@ export default function CalendarScreen() {
         </TouchableOpacity>
       </View>
       
-      <View style={[styles.calendarHeader, { backgroundColor: colors.card }]}>
+      <View style={[styles.calendarHeader, { backgroundColor: colors.surface, borderColor: colors.border, borderWidth: 1 }]}>
         <TouchableOpacity 
           style={styles.navButton}
           onPress={goToPreviousDay}
@@ -190,7 +190,7 @@ export default function CalendarScreen() {
             else if (diffDays === -1) label = 'Yesterday';
             return label ? (
               <View style={[styles.todayButton, { backgroundColor: colors.primary }]}>
-                <Text style={styles.todayButtonText}>{label}</Text>
+                <Text style={[styles.todayButtonText, { color: colors.onPrimary }]}>{label}</Text>
               </View>
             ) : null;
           })()}

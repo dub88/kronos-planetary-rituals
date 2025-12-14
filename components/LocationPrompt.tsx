@@ -131,7 +131,7 @@ const LocationPrompt = ({ visible, onClose, onLocationSelected }: LocationPrompt
       onRequestClose={onClose}
     >
       <View style={styles.modalOverlay}>
-        <View style={[styles.modalContent, { backgroundColor: colors.card }]}>
+        <View style={[styles.modalContent, { backgroundColor: colors.surface, borderColor: colors.border, borderWidth: 1 }]}>
           <TouchableOpacity 
             style={styles.closeButton} 
             onPress={onClose}
@@ -163,9 +163,9 @@ const LocationPrompt = ({ visible, onClose, onLocationSelected }: LocationPrompt
             disabled={loading}
           >
             {loading ? (
-              <ActivityIndicator color="white" size="small" />
+              <ActivityIndicator color={colors.onPrimary} size="small" />
             ) : (
-              <Text style={styles.primaryButtonText}>Allow Location Access</Text>
+              <Text style={[styles.primaryButtonText, { color: colors.onPrimary }]}>Allow Location Access</Text>
             )}
           </TouchableOpacity>
           

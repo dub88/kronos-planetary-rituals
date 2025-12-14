@@ -1,6 +1,6 @@
-import { Ritual } from '@/types';
+import { RitualDefinition } from '@/types';
 
-export const ritualData: Ritual[] = [
+export const ritualData: RitualDefinition[] = [
   {
     id: 'sun',
     name: 'Solar Ritual',

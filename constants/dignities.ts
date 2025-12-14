@@ -1,6 +1,8 @@
 // Planetary dignities in astrology
 // These define the relationship between planets and zodiac signs
 
+import type { PlanetDay } from '@/types';
+
 export interface Dignity {
   name: string;
   description: string;
@@ -65,7 +67,14 @@ export const getZodiacSymbol = (signName: string): string => {
 
 // Planetary dignities chart
 // Which planet rules which sign
-export const dignityChart = {
+type PlanetDignityChartEntry = {
+  rulership: string[];
+  exaltation: string[];
+  detriment: string[];
+  fall: string[];
+};
+
+export const dignityChart: Record<PlanetDay, PlanetDignityChartEntry> = {
   sun: {
     rulership: ['Leo'],
     exaltation: ['Aries'],
@@ -112,25 +121,26 @@ export const dignityChart = {
 
 // Get the dignity of a planet in a sign
 export const getDignity = (planet: string, sign: string): string => {
-  if (!planet || !sign || !dignityChart[planet]) {
+  const p = planet?.toLowerCase() as PlanetDay;
+  if (!p || !sign || !dignityChart[p]) {
     return 'peregrine';
   }
   
   const lowerSign = sign.toLowerCase();
   
-  if (dignityChart[planet].rulership.some(s => s.toLowerCase() === lowerSign)) {
+  if (dignityChart[p].rulership.some((s: string) => s.toLowerCase() === lowerSign)) {
     return 'rulership';
   }
   
-  if (dignityChart[planet].exaltation.some(s => s.toLowerCase() === lowerSign)) {
+  if (dignityChart[p].exaltation.some((s: string) => s.toLowerCase() === lowerSign)) {
     return 'exaltation';
   }
   
-  if (dignityChart[planet].detriment.some(s => s.toLowerCase() === lowerSign)) {
+  if (dignityChart[p].detriment.some((s: string) => s.toLowerCase() === lowerSign)) {
     return 'detriment';
   }
   
-  if (dignityChart[planet].fall.some(s => s.toLowerCase() === lowerSign)) {
+  if (dignityChart[p].fall.some((s: string) => s.toLowerCase() === lowerSign)) {
     return 'fall';
   }
   

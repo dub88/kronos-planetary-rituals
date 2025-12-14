@@ -27,25 +27,25 @@ const DailyCard = ({
   const { colors, currentDayTheme } = useTheme();
   
   // Use provided color or default from theme
-  const cardColor = color || colors.card;
+  const cardColor = color || colors.surface2 || colors.surface;
   
   // Determine gradient colors based on variant and day theme
   const getGradientColors = () => {
     try {
       switch (variant) {
         case 'parchment':
-          return [colors.card, colors.card, colors.card] as readonly [string, string, string];
+          return [colors.surface2 || colors.surface, colors.surface, colors.surface] as readonly [string, string, string];
         case 'iron':
-          return [colors.card, colors.card, colors.card] as readonly [string, string, string];
+          return [colors.surface2 || colors.surface, colors.surface, colors.surface] as readonly [string, string, string];
         case 'ritual':
-          return [cardColor, colors.card, colors.card] as readonly [string, string, string];
+          return [cardColor, colors.surface, colors.surface] as readonly [string, string, string];
         default:
           // For default case, ensure we have at least 2 colors as required by LinearGradient
-          return [cardColor, colors.card, colors.card] as readonly [string, string, string];
+          return [cardColor, colors.surface, colors.surface] as readonly [string, string, string];
       }
     } catch (error) {
       console.error('Error in getGradientColors:', error);
-      return [colors.card, colors.card, colors.card] as readonly [string, string, string];
+      return [colors.surface, colors.surface, colors.surface] as readonly [string, string, string];
     }
   };
   

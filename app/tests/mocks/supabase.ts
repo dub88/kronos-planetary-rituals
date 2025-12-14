@@ -90,16 +90,17 @@ export const createMockSupabaseClient = () => {
       signInWithPassword: jest.fn(),
       signOut: jest.fn()
     },
-    from: jest.fn().mockImplementation((table: string) => {
+    from: jest.fn().mockImplementation((table: unknown) => {
+      const tableName = String(table);
       // Create the select chain with proper types
       const selectFn = jest.fn().mockReturnValue({
         eq: jest.fn().mockReturnThis(),
         order: jest.fn().mockReturnThis(),
         limit: jest.fn().mockReturnThis(),
         single: jest.fn<() => Promise<SupabaseResponse<any>>>().mockResolvedValue({
-          data: table === 'settings' ? mockSettings : 
-               table === 'profiles' ? mockProfile : 
-               table === 'ritual_logs' ? mockRitualLog : null,
+          data: tableName === 'settings' ? mockSettings : 
+               tableName === 'profiles' ? mockProfile : 
+               tableName === 'ritual_logs' ? mockRitualLog : null,
           error: null
         })
       });
@@ -108,21 +109,21 @@ export const createMockSupabaseClient = () => {
       return {
         select: selectFn,
         insert: jest.fn<() => Promise<SupabaseResponse<any[]>>>().mockResolvedValue({ 
-          data: [table === 'settings' ? mockSettings : 
-                table === 'profiles' ? mockProfile : 
-                table === 'ritual_logs' ? mockRitualLog : {}], 
+          data: [tableName === 'settings' ? mockSettings : 
+                tableName === 'profiles' ? mockProfile : 
+                tableName === 'ritual_logs' ? mockRitualLog : {}], 
           error: null 
         }),
         update: jest.fn<() => Promise<SupabaseResponse<any[]>>>().mockResolvedValue({ 
-          data: [table === 'settings' ? mockSettings : 
-                table === 'profiles' ? mockProfile : 
-                table === 'ritual_logs' ? mockRitualLog : {}], 
+          data: [tableName === 'settings' ? mockSettings : 
+                tableName === 'profiles' ? mockProfile : 
+                tableName === 'ritual_logs' ? mockRitualLog : {}], 
           error: null 
         }),
         upsert: jest.fn<() => Promise<SupabaseResponse<any[]>>>().mockResolvedValue({ 
-          data: [table === 'settings' ? mockSettings : 
-                table === 'profiles' ? mockProfile : 
-                table === 'ritual_logs' ? mockRitualLog : {}], 
+          data: [tableName === 'settings' ? mockSettings : 
+                tableName === 'profiles' ? mockProfile : 
+                tableName === 'ritual_logs' ? mockRitualLog : {}], 
           error: null 
         })
       };

@@ -5,6 +5,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { User, Camera, ArrowRight, Moon, Star, Trash2 } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import { useTheme } from '@/components/ThemeProvider';
+import type { PlanetDay } from '@/types';
+import { colors as paletteColors } from '@/constants/colors';
 import { useProfileStore } from '@/stores/profileStore';
 import { useAuthStore } from '@/stores/authStore';
 import { pickImage, uploadAvatar, deleteAvatar } from '@/services/storage';
@@ -13,16 +15,16 @@ import ProfileAvatar from '@/components/ProfileAvatar';
 
 export default function OnboardingScreen() {
   const router = useRouter();
-  const { colors, isDarkMode } = useTheme();
+  const { colors, isDark } = useTheme();
   const { user } = useAuthStore();
   const { updateProfile, isLoading } = useProfileStore();
   
   const [name, setName] = useState(user?.email?.split('@')[0] || 'Seeker');
-  const [selectedPlanet, setSelectedPlanet] = useState('sun');
+  const [selectedPlanet, setSelectedPlanet] = useState<PlanetDay>('sun');
   const [avatarUri, setAvatarUri] = useState<string | null>(null);
   const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
   
-  const planets = [
+  const planets: Array<{ id: PlanetDay; name: string; symbol: string }> = [
     { id: 'sun', name: 'Sun', symbol: '☉' },
     { id: 'moon', name: 'Moon', symbol: '☽' },
     { id: 'mars', name: 'Mars', symbol: '♂' },
@@ -73,11 +75,11 @@ export default function OnboardingScreen() {
   };
   
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}> 
       <LinearGradient
-        colors={isDarkMode 
-          ? [colors.bloodRed, colors.abyssal, colors.background] 
-          : [colors.bloodRed, colors.background, colors.background]}
+        colors={(isDark
+          ? [paletteColors.bloodRed, paletteColors.abyssal, colors.background]
+          : [paletteColors.bloodRed, colors.background, colors.background]) as [string, string, ...string[]]}
         style={styles.gradient}
       >
         <ScrollView contentContainerStyle={styles.scrollContent}>
@@ -91,7 +93,7 @@ export default function OnboardingScreen() {
             <View style={styles.avatarContainer}>
               <ProfileAvatar size={120} />
               <TouchableOpacity 
-                style={[styles.changeAvatarButton, { backgroundColor: colors.bloodRed, borderColor: colors.background }]}
+                style={[styles.changeAvatarButton, { backgroundColor: paletteColors.bloodRed, borderColor: colors.background }]}
                 onPress={handleChangeAvatar}
               >
                 <Camera size={20} color={colors.text} />
@@ -142,7 +144,7 @@ export default function OnboardingScreen() {
           </View>
           
           <TouchableOpacity 
-            style={[styles.completeButton, { backgroundColor: colors.bloodRed, borderColor: `${colors.text}20` }]}
+            style={[styles.completeButton, { backgroundColor: paletteColors.bloodRed, borderColor: `${colors.text}20` }]}
             onPress={handleComplete}
             disabled={isLoading}
           >

@@ -12,6 +12,8 @@ const BackgroundPattern: React.FC<BackgroundPatternProps> = ({
   scale = 1
 }) => {
   const { currentDayTheme, colors, isDark } = useTheme();
+ 
+  const percent = (value: number): `${number}%` => `${value}%` as `${number}%`;
   
   // Get pattern based on the day's theme
   const renderPattern = () => {
@@ -78,8 +80,8 @@ const BackgroundPattern: React.FC<BackgroundPatternProps> = ({
               style={[
                 styles.forgeSpark, 
                 { 
-                  left: Math.random() * 100 + '%', 
-                  top: Math.random() * 100 + '%',
+                  left: percent(Math.random() * 100), 
+                  top: percent(Math.random() * 100),
                   backgroundColor: patternColor,
                   width: Math.random() * 4 + 1,
                   height: Math.random() * 4 + 1,
@@ -103,8 +105,8 @@ const BackgroundPattern: React.FC<BackgroundPatternProps> = ({
               style={[
                 styles.circuitLine, 
                 { 
-                  left: Math.random() * 80 + 10 + '%', 
-                  top: i * 10 + '%',
+                  left: percent(Math.random() * 80 + 10), 
+                  top: percent(i * 10),
                   width: Math.random() * 30 + 10,
                   backgroundColor: patternColor
                 }
@@ -117,8 +119,8 @@ const BackgroundPattern: React.FC<BackgroundPatternProps> = ({
               style={[
                 styles.circuitNode, 
                 { 
-                  left: Math.random() * 80 + 10 + '%', 
-                  top: Math.random() * 80 + 10 + '%',
+                  left: percent(Math.random() * 80 + 10), 
+                  top: percent(Math.random() * 80 + 10),
                   backgroundColor: patternColor
                 }
               ]} 
@@ -140,8 +142,8 @@ const BackgroundPattern: React.FC<BackgroundPatternProps> = ({
               style={[
                 styles.star, 
                 { 
-                  left: Math.random() * 100 + '%', 
-                  top: Math.random() * 100 + '%',
+                  left: percent(Math.random() * 100), 
+                  top: percent(Math.random() * 100),
                   backgroundColor: patternColor,
                   width: Math.random() * 2 + 1,
                   height: Math.random() * 2 + 1,
@@ -190,8 +192,8 @@ const BackgroundPattern: React.FC<BackgroundPatternProps> = ({
               style={[
                 styles.stoneCrack, 
                 { 
-                  left: Math.random() * 80 + 10 + '%', 
-                  top: Math.random() * 80 + 10 + '%',
+                  left: percent(Math.random() * 80 + 10), 
+                  top: percent(Math.random() * 80 + 10),
                   width: Math.random() * 30 + 10,
                   transform: [{ rotate: `${Math.random() * 180}deg` }],
                   backgroundColor: patternColor
@@ -234,7 +236,6 @@ const styles = StyleSheet.create({
     height: 100,
     left: 99,
     top: 0,
-    transformOrigin: 'bottom',
   },
   // Waves pattern (Moon)
   wavesPattern: {
@@ -303,7 +304,6 @@ const styles = StyleSheet.create({
     left: 40,
     top: 50,
     borderRadius: 10,
-    transformOrigin: 'bottom',
   },
   // Stone pattern (Saturn)
   stonePattern: {

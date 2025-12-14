@@ -20,7 +20,7 @@ const GothicSymbol = ({
   const { colors, currentDayTheme } = useTheme();
   
   // Use provided color or fallback to theme color
-  const symbolColor = color || currentDayTheme?.primary || colors.text;
+  const symbolColor = color || currentDayTheme?.colors?.primary || colors.text;
   
   // Get border style based on the day's theme
   const getBorderStyle = () => {

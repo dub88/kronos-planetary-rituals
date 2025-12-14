@@ -23,16 +23,21 @@ const normalizeSupabaseUrl = (value: string | undefined) => {
 const resolvedSupabaseUrl = normalizeSupabaseUrl(rawSupabaseUrl);
 const resolvedSupabaseAnonKey = rawSupabaseAnonKey?.trim();
 
-if (!resolvedSupabaseUrl) {
+const isJestTestEnv = typeof process !== 'undefined' && !!process.env.JEST_WORKER_ID;
+
+const effectiveSupabaseUrl = resolvedSupabaseUrl || (isJestTestEnv ? 'https://mock-supabase-url.com' : undefined);
+const effectiveSupabaseAnonKey = resolvedSupabaseAnonKey || (isJestTestEnv ? 'mock-anon-key' : undefined);
+
+if (!effectiveSupabaseUrl) {
   throw new Error('Missing SUPABASE_URL in environment variables');
 }
 
-if (!resolvedSupabaseAnonKey) {
+if (!effectiveSupabaseAnonKey) {
   throw new Error('Missing SUPABASE_ANON_KEY in environment variables');
 }
 
-export const supabaseUrl = resolvedSupabaseUrl;
-export const supabaseAnonKey = resolvedSupabaseAnonKey;
+export const supabaseUrl = effectiveSupabaseUrl;
+export const supabaseAnonKey = effectiveSupabaseAnonKey;
 
 // Create a custom storage adapter for AsyncStorage
 const AsyncStorageAdapter = {

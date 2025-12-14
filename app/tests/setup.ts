@@ -77,7 +77,8 @@ jest.mock('@supabase/supabase-js', () => {
       auth: {
         getSession: getSessionMock
       },
-      from: jest.fn().mockImplementation((table: string) => {
+      from: jest.fn().mockImplementation((table: unknown) => {
+        const tableName = String(table);
         return {
           select: jest.fn().mockReturnValue({
             eq: jest.fn().mockReturnThis(),
