@@ -17,7 +17,7 @@ export default function CalendarScreen() {
   const { location } = useLocationStore();
   const [selectedDate, setSelectedDate] = useState(() => {
     const now = new Date();
-    console.log('Calendar: Initializing with current date:', now.toISOString());
+    
     return now;
   });
   const [planetaryHours, setPlanetaryHours] = useState<PlanetaryHour[]>([]);
@@ -38,12 +38,12 @@ export default function CalendarScreen() {
       try {
         // Get timezone from system
         const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-        console.log('Calendar: Using timezone:', timezone);
+        
         
         // Use location if available, otherwise use default values
         const latitude = location?.latitude || 0;
         const longitude = location?.longitude || 0;
-        console.log('Calendar: Using location:', { latitude, longitude, name: location?.name });
+        
         
         // Create a fresh date object for the selected date
         // Force date to noon to avoid timezone issues
@@ -51,15 +51,12 @@ export default function CalendarScreen() {
         const dateAtNoon = new Date(selectedDate);
         dateAtNoon.setHours(12, 0, 0, 0);
         
-        console.log('Calendar: Today is:', today.toISOString());
-        console.log('Calendar: Calculating for date:', dateAtNoon.toISOString());
-        console.log('Calendar: Is selected date today?', 
-          dateAtNoon.getDate() === today.getDate() && 
-          dateAtNoon.getMonth() === today.getMonth() && 
-          dateAtNoon.getFullYear() === today.getFullYear());
+        
+        
+        
         
         // Calculate planetary hours using the accurate implementation
-        console.log('Calendar: Calling calculatePlanetaryHours...');
+        
         const hours = await calculatePlanetaryHours(
           latitude,
           longitude,
@@ -70,10 +67,10 @@ export default function CalendarScreen() {
           new Date('2025-04-21T17:10:18-06:00') // pass the actual current local time
         );
         
-        console.log(`Calendar: Received ${hours.length} planetary hours`);
+        
         if (hours.length > 0) {
-          console.log('Calendar: First hour:', hours[0]);
-          console.log('Calendar: Current hour:', hours.find(h => h.isCurrentHour));
+          
+          
         }
         
         setPlanetaryHours(hours as PlanetaryHour[]);
@@ -107,7 +104,7 @@ export default function CalendarScreen() {
   const goToToday = () => {
     // Use the same hardcoded date (April 11, 2025) as in the isToday function
     const today = new Date(2025, 3, 11); // April 11, 2025 (months are 0-indexed)
-    console.log('Calendar: Going to today (hardcoded April 11, 2025):', today.toISOString());
+    
     setSelectedDate(today);
   };
   
@@ -127,12 +124,12 @@ export default function CalendarScreen() {
     const selectedDay = selectedDate.getDate();
     
     // Log detailed information for debugging
-    console.log(`Calendar: Today is hardcoded to ${today.toISOString()} (${todayYear}-${todayMonth+1}-${todayDay})`);
-    console.log(`Calendar: Selected date is ${selectedDate.toISOString()} (${selectedYear}-${selectedMonth+1}-${selectedDay})`);
+    
+    
     
     // Check if selected date matches our hardcoded today (April 11, 2025)
     const datesMatch = selectedDay === todayDay && selectedMonth === todayMonth && selectedYear === todayYear;
-    console.log('Calendar: Selected date matches April 11, 2025?', datesMatch);
+    
     
     return datesMatch;
   };
