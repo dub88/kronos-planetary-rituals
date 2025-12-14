@@ -8,7 +8,6 @@ import { useLocationStore } from '@/stores/locationStore';
 import { useRitualStore } from '@/stores/ritualStore';
 import Container from '@/components/ui/Container';
 import Title from '@/components/ui/Title';
-import DailyCard from '@/components/DailyCard';
 import PlanetaryHourCard from '@/components/PlanetaryHourCard';
 import { getPlanetaryDayRuler } from '@/utils/planetaryHours';
 import { getPlanetById } from '@/constants/planets';
@@ -18,10 +17,11 @@ import TodaysRitualCard from '@/components/TodaysRitualCard';
 import { AlertCircle } from 'lucide-react-native';
 import LocationPrompt from '@/components/LocationPrompt';
 import KronosLogo from '@/components/KronosLogo';
+import PlanetSymbol from '@/components/ui/PlanetSymbol';
 
 export default function HomeScreen() {
   const router = useRouter();
-  const { colors } = useTheme();
+  const { colors, currentDayTheme } = useTheme();
   const { fetchPlanetaryPositions, planetPositions } = usePlanetaryStore();
   const { location, hasPromptedForLocation, setHasPromptedForLocation } = useLocationStore();
   const { fetchRituals, fetchCompletedRituals, error } = useRitualStore();
@@ -61,8 +61,6 @@ export default function HomeScreen() {
   const dayRulerPosition = dayRulerPlanetId && planetPositions && planetPositions.length > 0 
     ? planetPositions.find(p => p.planet.toLowerCase() === dayRulerPlanetId.toLowerCase()) 
     : null;
-    
-  console.log('Day ruler planet:', dayRulerPlanetId, 'Position:', dayRulerPosition);
   
   const handleLocationPromptClose = () => {
     setShowLocationPrompt(false);
@@ -71,22 +69,36 @@ export default function HomeScreen() {
   
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
-      <ScrollView 
-        style={styles.scrollView}
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-      >
-        <Container>
-          {/* Kronos Logo - Centered and Prominent */}
-          <View style={styles.logoContainer}>
-            <KronosLogo size={120} />
+      <Container withPattern>
+        <ScrollView
+          style={styles.scrollView}
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+        >
+          <View style={styles.hero}>
+            <View style={styles.heroTopRow}>
+              <KronosLogo size={56} />
+              <View style={styles.heroTextCol}>
+                <Text style={[styles.heroKicker, { color: colors.textSecondary }]}>Today</Text>
+                <Text style={[styles.heroTitle, { color: colors.text }]}>
+                  {currentDayTheme.name} Day
+                </Text>
+              </View>
+              <View style={[styles.heroOrb, { backgroundColor: `${colors.primary}14`, borderColor: colors.border }]}> 
+                <PlanetSymbol planetId={currentDayTheme.planetId} size={28} variant="glowing" />
+              </View>
+            </View>
+
+            <Text style={[styles.heroSubtitle, { color: colors.textSecondary }]}>
+              Your ritual focus and planetary hours—at a glance.
+            </Text>
           </View>
           
           {/* Daily Practice heading removed as requested */}
           
           {/* Error message if there's an error */}
           {error && (
-            <View style={[styles.errorContainer, { backgroundColor: `${colors.error}20` }]}>
+            <View style={[styles.errorContainer, { backgroundColor: `${colors.error}12`, borderColor: `${colors.error}30` }]}> 
               <AlertCircle size={20} color={colors.error} />
               <Text style={[styles.errorText, { color: colors.error }]}>
                 {error}
@@ -129,8 +141,8 @@ export default function HomeScreen() {
             />
             <PlanetaryHourCard />
           </View>
-        </Container>
-      </ScrollView>
+        </ScrollView>
+      </Container>
       
       {showLocationPrompt && (
         <LocationPrompt 
@@ -143,29 +155,57 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
-  logoContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 16,
-    marginTop: 16,
-    width: '100%',
-  },
-  logo: {
-    width: 120,
-    height: 120,
-  },
   scrollView: {
     flex: 1,
   },
   scrollContent: {
-    paddingBottom: 40,
+    paddingBottom: 110,
+    paddingTop: 12,
+  },
+  hero: {
+    paddingTop: 10,
+    paddingBottom: 10,
+  },
+  heroTopRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    paddingHorizontal: 2,
+  },
+  heroTextCol: {
+    flex: 1,
+  },
+  heroKicker: {
+    fontSize: 12,
+    fontFamily: 'Inter-Medium',
+    letterSpacing: 0.3,
+    textTransform: 'uppercase',
+  },
+  heroTitle: {
+    fontSize: 22,
+    fontFamily: 'Inter-Bold',
+    letterSpacing: 0.2,
+  },
+  heroSubtitle: {
+    marginTop: 10,
+    fontSize: 14,
+    fontFamily: 'Inter-Regular',
+    lineHeight: 20,
+  },
+  heroOrb: {
+    width: 44,
+    height: 44,
+    borderRadius: 14,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   title: {
     marginTop: 16,
     marginBottom: 16,
   },
   section: {
-    marginTop: 24,
+    marginTop: 18,
   },
   sectionTitle: {
     marginBottom: 12,
@@ -174,12 +214,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     padding: 12,
-    borderRadius: 8,
+    borderRadius: 12,
+    borderWidth: 1,
     marginBottom: 16,
   },
   errorText: {
     marginLeft: 8,
     flex: 1,
     fontSize: 14,
+    fontFamily: 'Inter-Medium',
   },
 });

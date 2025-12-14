@@ -17,22 +17,27 @@ const asPlanetDay = (id: string): PlanetDay => {
 
 // Define theme colors with modern aesthetics
 const lightColors = {
-  primary: '#5D5FEF',       // Modern indigo
-  secondary: '#00BFA5',     // Teal accent
-  background: '#F8F9FC',    // Soft off-white
-  card: '#FFFFFF',          // Pure white
-  text: '#1A1A2C',          // Near black with slight blue tint
-  textSecondary: '#4A4B57', // Dark gray with slight blue tint
-  textTertiary: '#8E8EA0',  // Medium gray with slight blue tint
-  border: '#E4E6F0',        // Light gray with blue tint
-  notification: '#F45D90',  // Vibrant pink
-  error: '#F45D5D',         // Modern red
-  success: '#4CAF50',       // Green
-  warning: '#FFAB2E',       // Amber orange
-  info: '#3D8BF8',          // Bright blue
-  shadow: 'rgba(0,0,0,0.08)',// Subtle shadow
-  inkStain: '#2D2D42',      // Dark blue-gray
-  runeEtch: '#4A4A6A',      // Medium blue-gray
+  primary: '#5B5FF6',
+  secondary: '#00D4B8',
+  onPrimary: '#FFFFFF',
+  onSecondary: '#06201B',
+  background: '#F7F7FF',
+  surface: '#FFFFFF',
+  surface2: '#F1F2FF',
+  card: '#FFFFFF',
+  text: '#0B1020',
+  textSecondary: '#3E465E',
+  textTertiary: '#7680A0',
+  border: 'rgba(20, 28, 51, 0.10)',
+  notification: '#FF3D7F',
+  error: '#EF4444',
+  success: '#16A34A',
+  warning: '#F59E0B',
+  info: '#2563EB',
+  shadow: 'rgba(10, 16, 32, 0.12)',
+  shadowStrong: 'rgba(10, 16, 32, 0.20)',
+  inkStain: '#1C2340',
+  runeEtch: '#394165',
   
   // Planet colors - slightly adjusted for modern palette
   sun: '#FF9D2E',           // Vibrant orange
@@ -45,22 +50,27 @@ const lightColors = {
 };
 
 const darkColors = {
-  primary: '#BB86FC',       // Purple
-  secondary: '#03DAC6',     // Teal
-  background: '#121220',    // Dark blue-black
-  card: '#1E1E2D',          // Dark blue-gray
-  text: '#F0F0F5',          // Off-white with blue tint
-  textSecondary: '#C0C0CF', // Light gray with blue tint
-  textTertiary: '#8E8EA0',  // Medium gray with blue tint
-  border: '#2C2C3A',        // Dark gray with blue tint
-  notification: '#CF6679',  // Pink
-  error: '#FF5C5C',         // Bright red
-  success: '#81C784',       // Green
-  warning: '#FFB74D',       // Amber
-  info: '#64B5F6',          // Blue
-  shadow: 'rgba(0,0,0,0.3)',// Darker shadow for dark mode
-  inkStain: '#CCCCCC',
-  runeEtch: '#AAAAAA',
+  primary: '#A8A5FF',
+  secondary: '#28E0D0',
+  onPrimary: '#0A0B14',
+  onSecondary: '#071211',
+  background: '#070712',
+  surface: '#0E1020',
+  surface2: '#14162B',
+  card: '#0F1124',
+  text: '#F3F4FF',
+  textSecondary: '#B9BDE0',
+  textTertiary: '#7B80A8',
+  border: 'rgba(255, 255, 255, 0.10)',
+  notification: '#FF4D8D',
+  error: '#FF5C5C',
+  success: '#4ADE80',
+  warning: '#FDBA74',
+  info: '#60A5FA',
+  shadow: 'rgba(0,0,0,0.45)',
+  shadowStrong: 'rgba(0,0,0,0.70)',
+  inkStain: '#D6D8FF',
+  runeEtch: '#AEB3DD',
   
   // Planet colors
   sun: '#FFB74D',

@@ -79,6 +79,11 @@ const Button = ({
           ...sizeStyles[size],
           borderRadius,
           backgroundColor: colors.primary,
+          shadowColor: colors.shadow,
+          shadowOffset: { width: 0, height: 10 },
+          shadowOpacity: Platform.OS === 'web' ? 0.12 : 0.18,
+          shadowRadius: 18,
+          elevation: 3,
         };
       case 'secondary':
         return {
@@ -86,6 +91,11 @@ const Button = ({
           ...sizeStyles[size],
           borderRadius,
           backgroundColor: colors.secondary,
+          shadowColor: colors.shadow,
+          shadowOffset: { width: 0, height: 8 },
+          shadowOpacity: Platform.OS === 'web' ? 0.10 : 0.16,
+          shadowRadius: 14,
+          elevation: 2,
         };
       case 'outline':
         return {
@@ -94,7 +104,7 @@ const Button = ({
           borderRadius,
           borderWidth: 1,
           borderColor: colors.primary,
-          backgroundColor: 'transparent',
+          backgroundColor: colors.surface,
         };
       case 'ghost':
         return {
@@ -131,11 +141,16 @@ const Button = ({
     // Variant text styles
     switch (variant) {
       case 'primary':
+        return {
+          ...baseTextStyles,
+          ...sizeTextStyles[size],
+          color: colors.onPrimary,
+        };
       case 'secondary':
         return {
           ...baseTextStyles,
           ...sizeTextStyles[size],
-          color: colors.text,
+          color: colors.onSecondary,
         };
       case 'outline':
         return {
@@ -153,7 +168,7 @@ const Button = ({
         return {
           ...baseTextStyles,
           ...sizeTextStyles[size],
-          color: colors.text,
+          color: colors.onPrimary,
         };
     }
   };
@@ -169,8 +184,8 @@ const Button = ({
   // Using 'as const' to make it a readonly tuple as required by LinearGradient
   const gradientColors = [
     colors.primary, // Use primary color as base
-    colors.primary, // Middle color
-    variant === 'primary' ? colors.primary : colors.secondary // End color with slight variation
+    currentDayTheme?.colors?.secondary || colors.secondary,
+    currentDayTheme?.colors?.primary || colors.primary
   ] as readonly [string, string, string];
   
   // Render button content

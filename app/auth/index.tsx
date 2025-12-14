@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Mail, Lock, LogIn, Moon, Star } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import { useTheme } from '@/components/ThemeProvider';
@@ -10,10 +11,11 @@ import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import Title from '@/components/ui/Title';
 import PlanetSymbol from '@/components/ui/PlanetSymbol';
+import KronosLogo from '@/components/KronosLogo';
 
 export default function LoginScreen() {
   const router = useRouter();
-  const { colors, currentDayTheme } = useTheme();
+  const { colors, currentDayTheme, isDark } = useTheme();
   const { login, error, isLoading, clearError } = useAuthStore();
   
   const [email, setEmail] = useState('');
@@ -40,36 +42,59 @@ export default function LoginScreen() {
   };
   
   return (
-    <SafeAreaView style={styles.container}>
-      <Container>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+      <View style={StyleSheet.absoluteFill}>
+        <LinearGradient
+          colors={
+            isDark
+              ? ['#05050E', colors.background, colors.surface]
+              : [colors.background, colors.surface2 || colors.surface, colors.background]
+          }
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={StyleSheet.absoluteFill}
+        />
+      </View>
+      <Container withPattern>
         <View style={styles.content}>
-          <View style={styles.iconContainer}>
-            <PlanetSymbol 
-              symbol={currentDayTheme.symbol} 
-              size={64} 
-              variant="glowing"
+          <View style={styles.brandRow}>
+            <KronosLogo size={44} />
+            <View style={styles.brandText}>
+              <Text style={[styles.brandTitle, { color: colors.text }]}>Kronos</Text>
+              <Text style={[styles.brandSubtitle, { color: colors.textSecondary }]}>
+                Day of {currentDayTheme.name}
+              </Text>
+            </View>
+          </View>
+
+          <View style={styles.hero}>
+            <View style={[styles.heroOrb, { backgroundColor: `${colors.primary}16`, borderColor: colors.border }]}>
+              <PlanetSymbol planetId={currentDayTheme.planetId} size={64} variant="glowing" />
+            </View>
+
+            <Title
+              title="Welcome back"
+              subtitle="Sign in to continue your planetary practice"
+              align="center"
+              size="large"
+              style={styles.heroTitle}
             />
           </View>
-          
-          <Title 
-            title="Kronos"
-            subtitle={`Day of ${currentDayTheme.name} • Planetary Magic & Rituals`}
-            align="center"
-            size="large"
-          />
-          
-          <Card variant="elevated" style={styles.formContainer}>
+
+          <Card variant="elevated" style={styles.formContainer} withGradient>
             {error && (
-              <View style={[styles.errorContainer, { backgroundColor: `${colors.error}20` }]}>
-                <Text style={[styles.errorText, { color: colors.text }]}>{error}</Text>
+              <View style={[styles.errorContainer, { backgroundColor: `${colors.error}12`, borderColor: `${colors.error}30` }]}>
+                <Text style={[styles.errorText, { color: colors.text }]} numberOfLines={3}>
+                  {error}
+                </Text>
                 <TouchableOpacity onPress={clearError}>
                   <Text style={[styles.errorDismiss, { color: colors.primary }]}>Dismiss</Text>
                 </TouchableOpacity>
               </View>
             )}
             
-            <View style={[styles.inputContainer, { borderColor: colors.border }]}>
-              <Mail size={20} color={colors.textSecondary} />
+            <View style={[styles.inputContainer, { borderColor: colors.border, backgroundColor: colors.surface2 || colors.surface }]}> 
+              <Mail size={18} color={colors.textSecondary} />
               <TextInput
                 style={[styles.input, { color: colors.text }]}
                 placeholder="Email"
@@ -78,11 +103,13 @@ export default function LoginScreen() {
                 onChangeText={setEmail}
                 autoCapitalize="none"
                 keyboardType="email-address"
+                autoComplete="email"
+                textContentType="emailAddress"
               />
             </View>
             
-            <View style={[styles.inputContainer, { borderColor: colors.border }]}>
-              <Lock size={20} color={colors.textSecondary} />
+            <View style={[styles.inputContainer, { borderColor: colors.border, backgroundColor: colors.surface2 || colors.surface }]}> 
+              <Lock size={18} color={colors.textSecondary} />
               <TextInput
                 style={[styles.input, { color: colors.text }]}
                 placeholder="Password"
@@ -90,6 +117,8 @@ export default function LoginScreen() {
                 value={password}
                 onChangeText={setPassword}
                 secureTextEntry
+                textContentType="password"
+                autoComplete="password"
               />
             </View>
             
@@ -97,8 +126,8 @@ export default function LoginScreen() {
               variant="primary"
               onPress={handleLogin}
               loading={isLoading}
-              icon={<LogIn size={20} color={colors.text} />}
-              style={styles.loginButton}
+              icon={<LogIn size={18} color={colors.onPrimary} />}
+              style={styles.primaryButton}
               fullWidth
             >
               Sign In
@@ -107,7 +136,7 @@ export default function LoginScreen() {
             <Button
               variant="outline"
               onPress={handleRegister}
-              style={styles.registerButton}
+              style={styles.secondaryButton}
               fullWidth
             >
               Create an Account
@@ -133,23 +162,57 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    padding: 24,
-    alignItems: 'center',
+    paddingHorizontal: 18,
+    paddingTop: 18,
+    paddingBottom: 28,
     justifyContent: 'center',
   },
-  iconContainer: {
-    marginBottom: 24,
+  brandRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 10,
+    marginBottom: 18,
+  },
+  brandText: {
+    alignItems: 'flex-start',
+  },
+  brandTitle: {
+    fontSize: 18,
+    fontFamily: 'Inter-Bold',
+    letterSpacing: 0.2,
+  },
+  brandSubtitle: {
+    fontSize: 12,
+    fontFamily: 'Inter-Medium',
+  },
+  hero: {
+    alignItems: 'center',
+    marginBottom: 18,
+  },
+  heroOrb: {
+    width: 112,
+    height: 112,
+    borderRadius: 28,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    marginBottom: 12,
+  },
+  heroTitle: {
+    marginTop: 2,
   },
   formContainer: {
     width: '100%',
     maxWidth: 400,
-    marginVertical: 32,
-    padding: 24,
+    marginTop: 10,
+    padding: 18,
   },
   errorContainer: {
     padding: 12,
-    marginBottom: 16,
-    borderRadius: 8,
+    marginBottom: 14,
+    borderRadius: 12,
+    borderWidth: 1,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -157,6 +220,7 @@ const styles = StyleSheet.create({
   errorText: {
     flex: 1,
     fontSize: 14,
+    fontFamily: 'Inter-Medium',
   },
   errorDismiss: {
     fontSize: 14,
@@ -169,18 +233,19 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     marginBottom: 16,
     borderWidth: 1,
-    borderRadius: 8,
-    height: 50,
+    borderRadius: 14,
+    height: 52,
   },
   input: {
     flex: 1,
     marginLeft: 12,
+    fontFamily: 'Inter-Regular',
   },
-  loginButton: {
-    marginTop: 8,
+  primaryButton: {
+    marginTop: 6,
   },
-  registerButton: {
-    marginTop: 8,
+  secondaryButton: {
+    marginTop: 10,
   },
   footer: {
     flexDirection: 'row',
@@ -192,5 +257,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontStyle: 'italic',
     textAlign: 'center',
+    fontFamily: 'Inter-Regular',
   },
 });

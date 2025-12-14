@@ -1,5 +1,7 @@
+import type { DayTheme, PlanetDay } from '../app/types/index';
+
 // Day themes based on planetary rulers
-export const dayThemes = {
+export const dayThemes: Record<PlanetDay, DayTheme> = {
   sun: {
     name: 'Solar',
     description: 'Radiant energy of vitality and leadership',

@@ -1,16 +1,20 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Mail, Lock, UserPlus, ArrowLeft, Moon, Star } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import { useTheme } from '@/components/ThemeProvider';
 import { useAuthStore } from '@/stores/authStore';
-import GothicTitle from '@/components/GothicTitle';
+import Container from '@/components/ui/Container';
+import Card from '@/components/ui/Card';
+import Button from '@/components/ui/Button';
+import Title from '@/components/ui/Title';
+import PlanetSymbol from '@/components/ui/PlanetSymbol';
 
 export default function RegisterScreen() {
   const router = useRouter();
-  const { colors, isDarkMode } = useTheme();
+  const { colors, isDark, currentDayTheme } = useTheme();
   const { register, error, isLoading, clearError } = useAuthStore();
   
   const [name, setName] = useState('');
@@ -41,7 +45,7 @@ export default function RegisterScreen() {
       Alert.alert(
         'Registration Successful',
         'Please check your email to confirm your account before logging in.',
-        [{ text: 'OK', onPress: () => router.replace('/auth/login') }]
+        [{ text: 'OK', onPress: () => router.replace('/auth') }]
       );
     } catch (error) {
       // Error is already handled in the store
@@ -55,47 +59,52 @@ export default function RegisterScreen() {
   
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
-      <LinearGradient
-        colors={isDarkMode 
-          ? [colors.bloodRed, colors.abyssal, colors.background] 
-          : [colors.bloodRed, colors.background, colors.background]}
-        style={styles.gradient}
-      >
-        <TouchableOpacity 
-          style={styles.backButton}
-          onPress={handleBack}
-        >
-          <ArrowLeft size={20} color={colors.text} />
-          <Text style={[styles.backButtonText, { color: colors.text }]}>Back to Login</Text>
-        </TouchableOpacity>
-        
-        <View style={[styles.iconContainer, { backgroundColor: `${colors.bloodRed}30`, borderColor: `${colors.text}20` }]}>
-          <Moon size={64} color={colors.text} />
-          
-          {/* Decorative pentagram */}
-          <View style={styles.pentagramBg}>
-            <Text style={[styles.pentagramText, { color: colors.text }]}>✴</Text>
-          </View>
-        </View>
-        
-        <GothicTitle 
-          title="Create Account"
-          subtitle="Join the mystical journey"
-          variant="ritual"
+      <View style={StyleSheet.absoluteFill}>
+        <LinearGradient
+          colors={
+            isDark
+              ? ['#05050E', colors.background, colors.surface]
+              : [colors.background, colors.surface2 || colors.surface, colors.background]
+          }
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={StyleSheet.absoluteFill}
         />
-        
-        <View style={styles.formContainer}>
+      </View>
+
+      <Container withPattern>
+        <TouchableOpacity style={styles.backButton} onPress={handleBack}>
+          <ArrowLeft size={18} color={colors.text} />
+          <Text style={[styles.backButtonText, { color: colors.text }]}>Back</Text>
+        </TouchableOpacity>
+
+        <View style={styles.content}>
+          <View style={[styles.heroOrb, { backgroundColor: `${colors.secondary}12`, borderColor: colors.border }]}> 
+            <PlanetSymbol planetId={currentDayTheme.planetId} size={64} variant="glowing" />
+          </View>
+
+          <Title
+            title="Create account"
+            subtitle="Start your planetary practice"
+            align="center"
+            size="large"
+            style={styles.heroTitle}
+          />
+
+          <Card variant="elevated" style={styles.formContainer} withGradient>
           {error && (
-            <View style={[styles.errorContainer, { backgroundColor: `${colors.error}30`, borderColor: colors.error }]}>
-              <Text style={[styles.errorText, { color: colors.text }]}>{error}</Text>
+            <View style={[styles.errorContainer, { backgroundColor: `${colors.error}12`, borderColor: `${colors.error}30` }]}>
+              <Text style={[styles.errorText, { color: colors.text }]} numberOfLines={3}>
+                {error}
+              </Text>
               <TouchableOpacity onPress={clearError}>
                 <Text style={[styles.errorDismiss, { color: colors.text }]}>Dismiss</Text>
               </TouchableOpacity>
             </View>
           )}
           
-          <View style={[styles.inputContainer, { backgroundColor: `${colors.text}10`, borderColor: `${colors.text}20` }]}>
-            <UserPlus size={20} color={colors.textSecondary} />
+          <View style={[styles.inputContainer, { backgroundColor: colors.surface2 || colors.surface, borderColor: colors.border }]}>
+            <UserPlus size={18} color={colors.textSecondary} />
             <TextInput
               style={[styles.input, { color: colors.text }]}
               placeholder="Full Name"
@@ -107,8 +116,8 @@ export default function RegisterScreen() {
             />
           </View>
 
-          <View style={[styles.inputContainer, { backgroundColor: `${colors.text}10`, borderColor: `${colors.text}20` }]}>
-            <Mail size={20} color={colors.textSecondary} />
+          <View style={[styles.inputContainer, { backgroundColor: colors.surface2 || colors.surface, borderColor: colors.border }]}>
+            <Mail size={18} color={colors.textSecondary} />
             <TextInput
               style={[styles.input, { color: colors.text }]}
               placeholder="Email"
@@ -122,8 +131,8 @@ export default function RegisterScreen() {
             />
           </View>
           
-          <View style={[styles.inputContainer, { backgroundColor: `${colors.text}10`, borderColor: `${colors.text}20` }]}>
-            <Lock size={20} color={colors.textSecondary} />
+          <View style={[styles.inputContainer, { backgroundColor: colors.surface2 || colors.surface, borderColor: colors.border }]}>
+            <Lock size={18} color={colors.textSecondary} />
             <TextInput
               style={[styles.input, { color: colors.text }]}
               placeholder="Password (min. 8 characters)"
@@ -136,8 +145,8 @@ export default function RegisterScreen() {
             />
           </View>
           
-          <View style={[styles.inputContainer, { backgroundColor: `${colors.text}10`, borderColor: `${colors.text}20` }]}>
-            <Lock size={20} color={colors.textSecondary} />
+          <View style={[styles.inputContainer, { backgroundColor: colors.surface2 || colors.surface, borderColor: colors.border }]}>
+            <Lock size={18} color={colors.textSecondary} />
             <TextInput
               style={[styles.input, { color: colors.text }]}
               placeholder="Confirm Password"
@@ -150,43 +159,27 @@ export default function RegisterScreen() {
             />
           </View>
           
-          <TouchableOpacity 
-            style={[styles.registerButton, { backgroundColor: colors.bloodRed, borderColor: `${colors.text}20` }]}
+          <Button
+            variant="primary"
             onPress={handleRegister}
-            disabled={isLoading}
+            loading={isLoading}
+            icon={<UserPlus size={18} color={colors.onPrimary} />}
+            fullWidth
+            style={styles.primaryButton}
           >
-            {isLoading ? (
-              <ActivityIndicator color={colors.text} />
-            ) : (
-              <>
-                <UserPlus size={20} color={colors.text} />
-                <Text style={[styles.registerButtonText, { color: colors.text }]}>Create Account</Text>
-              </>
-            )}
-          </TouchableOpacity>
+            Create Account
+          </Button>
+          </Card>
+
+          <View style={styles.footer}>
+            <Star size={16} color={colors.textSecondary} />
+            <Text style={[styles.footerText, { color: colors.textSecondary }]}>
+              "As above, so below. As within, so without."
+            </Text>
+            <Moon size={16} color={colors.textSecondary} />
+          </View>
         </View>
-        
-        <View style={styles.footer}>
-          <Star size={16} color={colors.textSecondary} />
-          <Text style={[styles.footerText, { color: colors.textSecondary }]}>
-            "As above, so below. As within, so without."
-          </Text>
-          <Moon size={16} color={colors.textSecondary} />
-        </View>
-        
-        {/* Decorative runes */}
-        <View style={styles.runeContainer}>
-          <Text style={[styles.rune, { color: colors.text }]}>᛭</Text>
-          <Text style={[styles.rune, { color: colors.text }]}>᛫</Text>
-          <Text style={[styles.rune, { color: colors.text }]}>᛬</Text>
-        </View>
-        
-        {/* Decorative elements */}
-        <View style={[styles.cornerTL, { borderColor: `${colors.text}20` }]} />
-        <View style={[styles.cornerTR, { borderColor: `${colors.text}20` }]} />
-        <View style={[styles.cornerBL, { borderColor: `${colors.text}20` }]} />
-        <View style={[styles.cornerBR, { borderColor: `${colors.text}20` }]} />
-      </LinearGradient>
+      </Container>
     </SafeAreaView>
   );
 }
@@ -195,50 +188,50 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  gradient: {
-    flex: 1,
-    padding: 24,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   backButton: {
     position: 'absolute',
-    top: 50,
-    left: 20,
+    top: 16,
+    left: 18,
     flexDirection: 'row',
     alignItems: 'center',
     zIndex: 10,
+    paddingVertical: 8,
+    paddingHorizontal: 10,
   },
   backButtonText: {
     marginLeft: 8,
-    fontFamily: 'serif',
+    fontFamily: 'Inter-Medium',
   },
-  iconContainer: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
+  content: {
+    flex: 1,
+    paddingHorizontal: 18,
+    paddingTop: 72,
+    paddingBottom: 28,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 24,
+  },
+  heroOrb: {
+    width: 112,
+    height: 112,
+    borderRadius: 28,
+    alignItems: 'center',
+    justifyContent: 'center',
     borderWidth: 1,
-    position: 'relative',
+    marginBottom: 12,
   },
-  pentagramBg: {
-    position: 'absolute',
-    opacity: 0.1,
-  },
-  pentagramText: {
-    fontSize: 100,
+  heroTitle: {
+    marginBottom: 14,
   },
   formContainer: {
     width: '100%',
     maxWidth: 400,
-    marginVertical: 32,
+    padding: 18,
+    marginTop: 6,
   },
   errorContainer: {
     padding: 12,
-    borderRadius: 4,
-    marginBottom: 16,
+    borderRadius: 12,
+    marginBottom: 14,
     borderWidth: 1,
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -247,6 +240,7 @@ const styles = StyleSheet.create({
   errorText: {
     flex: 1,
     fontSize: 14,
+    fontFamily: 'Inter-Medium',
   },
   errorDismiss: {
     fontSize: 14,
@@ -256,33 +250,19 @@ const styles = StyleSheet.create({
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderRadius: 4,
+    borderRadius: 14,
     paddingHorizontal: 16,
     marginBottom: 16,
     borderWidth: 1,
+    height: 52,
   },
   input: {
     flex: 1,
-    height: 50,
     marginLeft: 12,
-    fontFamily: 'serif',
+    fontFamily: 'Inter-Regular',
   },
-  registerButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 4,
-    padding: 16,
-    marginTop: 8,
-    borderWidth: 1,
-  },
-  registerButtonText: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginLeft: 8,
-    fontFamily: 'serif',
-    textTransform: 'uppercase',
-    letterSpacing: 1,
+  primaryButton: {
+    marginTop: 6,
   },
   footer: {
     flexDirection: 'row',
@@ -292,55 +272,8 @@ const styles = StyleSheet.create({
   },
   footerText: {
     fontSize: 14,
-    fontFamily: 'serif',
+    fontFamily: 'Inter-Regular',
     fontStyle: 'italic',
     textAlign: 'center',
-  },
-  runeContainer: {
-    position: 'absolute',
-    bottom: 12,
-    right: 12,
-    flexDirection: 'row',
-    opacity: 0.3,
-  },
-  rune: {
-    fontSize: 16,
-    marginLeft: 4,
-  },
-  cornerTL: {
-    position: 'absolute',
-    top: 10,
-    left: 10,
-    width: 20,
-    height: 20,
-    borderTopWidth: 2,
-    borderLeftWidth: 2,
-  },
-  cornerTR: {
-    position: 'absolute',
-    top: 10,
-    right: 10,
-    width: 20,
-    height: 20,
-    borderTopWidth: 2,
-    borderRightWidth: 2,
-  },
-  cornerBL: {
-    position: 'absolute',
-    bottom: 10,
-    left: 10,
-    width: 20,
-    height: 20,
-    borderBottomWidth: 2,
-    borderLeftWidth: 2,
-  },
-  cornerBR: {
-    position: 'absolute',
-    bottom: 10,
-    right: 10,
-    width: 20,
-    height: 20,
-    borderBottomWidth: 2,
-    borderRightWidth: 2,
   },
 });

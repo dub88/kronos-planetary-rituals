@@ -29,9 +29,11 @@ const Card = ({
   // Get card styles based on variant
   const getCardStyles = () => {
     const baseStyles: ViewStyle = {
-      backgroundColor: colors.card,
+      backgroundColor: colors.surface,
       borderRadius: currentDayTheme?.ui?.cardBorderRadius || 16,
       overflow: 'hidden',
+      borderWidth: 1,
+      borderColor: colors.border,
     };
     
     // Add web-specific styles for better mobile experience
@@ -48,26 +50,28 @@ const Card = ({
       case 'elevated':
         return {
           ...baseStyles,
-          shadowColor: colors.shadow,
+          shadowColor: colors.shadowStrong || colors.shadow,
           shadowOffset: { width: 0, height: 4 },
-          shadowOpacity: 0.15,
-          shadowRadius: 12,
-          elevation: 3,
+          shadowOpacity: Platform.OS === 'web' ? 0.14 : 0.22,
+          shadowRadius: 18,
+          elevation: 4,
         };
       case 'outlined':
         return {
           ...baseStyles,
-          borderWidth: 1,
           borderColor: color || colors.border,
           backgroundColor: 'transparent',
         };
       case 'filled':
         return {
           ...baseStyles,
-          backgroundColor: color || colors.primary,
+          backgroundColor: color || colors.surface2 || colors.surface,
         };
       default:
-        return baseStyles;
+        return {
+          ...baseStyles,
+          backgroundColor: colors.card,
+        };
     }
   };
   
@@ -82,8 +86,8 @@ const Card = ({
             <Text style={[
               styles.title, 
               { 
-                color: variant === 'filled' ? colors.text : colors.text,
-                fontFamily: currentDayTheme?.typography?.titleFont || 'system',
+                color: colors.text,
+                fontFamily: currentDayTheme?.typography?.titleFont || 'Inter-SemiBold',
               }
             ]}>
               {title}

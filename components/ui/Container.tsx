@@ -1,6 +1,7 @@
 import React, { ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useTheme } from '@/components/ThemeProvider';
+import BackgroundPattern from '@/components/BackgroundPattern';
 
 interface ContainerProps {
   children: ReactNode;
@@ -21,6 +22,7 @@ const Container = ({
       { backgroundColor: colors.background },
       style
     ]}>
+      {withPattern && <BackgroundPattern />}
       {children}
     </View>
   );
