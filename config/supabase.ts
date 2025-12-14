@@ -3,16 +3,26 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Platform } from 'react-native';
 import 'react-native-url-polyfill/auto';
 
-if (!process.env.EXPO_PUBLIC_SUPABASE_URL) {
+const resolvedSupabaseUrl =
+  process.env.EXPO_PUBLIC_SUPABASE_URL ||
+  process.env.NEXT_PUBLIC_SUPABASE_URL ||
+  process.env.SUPABASE_URL;
+
+const resolvedSupabaseAnonKey =
+  process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY ||
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+  process.env.SUPABASE_ANON_KEY;
+
+if (!resolvedSupabaseUrl) {
   throw new Error('Missing SUPABASE_URL in environment variables');
 }
 
-if (!process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY) {
+if (!resolvedSupabaseAnonKey) {
   throw new Error('Missing SUPABASE_ANON_KEY in environment variables');
 }
 
-export const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL;
-export const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
+export const supabaseUrl = resolvedSupabaseUrl;
+export const supabaseAnonKey = resolvedSupabaseAnonKey;
 
 // Create a custom storage adapter for AsyncStorage
 const AsyncStorageAdapter = {
