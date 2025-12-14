@@ -3,15 +3,25 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Platform } from 'react-native';
 import 'react-native-url-polyfill/auto';
 
-const resolvedSupabaseUrl =
+const rawSupabaseUrl =
   process.env.EXPO_PUBLIC_SUPABASE_URL ||
   process.env.NEXT_PUBLIC_SUPABASE_URL ||
   process.env.SUPABASE_URL;
 
-const resolvedSupabaseAnonKey =
+const rawSupabaseAnonKey =
   process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY ||
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
   process.env.SUPABASE_ANON_KEY;
+
+const normalizeSupabaseUrl = (value: string | undefined) => {
+  const trimmed = value?.trim();
+  if (!trimmed) return undefined;
+  if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) return trimmed.replace(/\/+$/, '');
+  return `https://${trimmed}`.replace(/\/+$/, '');
+};
+
+const resolvedSupabaseUrl = normalizeSupabaseUrl(rawSupabaseUrl);
+const resolvedSupabaseAnonKey = rawSupabaseAnonKey?.trim();
 
 if (!resolvedSupabaseUrl) {
   throw new Error('Missing SUPABASE_URL in environment variables');

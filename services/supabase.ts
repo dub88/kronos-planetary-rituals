@@ -1,55 +1,7 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { createClient } from '@supabase/supabase-js';
-import { Platform } from 'react-native';
+import { supabase } from '../config/supabase';
 import { RitualLog, Settings as AppSettings, Profile } from '../app/types/database';
 
-// Use the provided Supabase URL and anon key
-const supabaseUrl = 'https://ddayngewhgmynensehmg.supabase.co';
-// Use the anon key for client-side access
-const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRkYXluZ2V3aGdteW5lbnNlaG1nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDA5MzE2MDUsImV4cCI6MjA1NjUwNzYwNX0.hXP1t-LZdO_OemKaPeW27ee2GSx1q6cQSNoCxXro_78';
-
-// Create a custom storage adapter for AsyncStorage
-const AsyncStorageAdapter = {
-  getItem: (key: string) => AsyncStorage.getItem(key),
-  setItem: (key: string, value: string) => AsyncStorage.setItem(key, value),
-  removeItem: (key: string) => AsyncStorage.removeItem(key),
-};
-
-// Check if we're in a browser environment where localStorage is available
-const isLocalStorageAvailable = () => {
-  try {
-    if (typeof localStorage === 'undefined') return false;
-    const testKey = '__supabase_ls_test__';
-    localStorage.setItem(testKey, 'test');
-    localStorage.removeItem(testKey);
-    return true;
-  } catch (e) {
-    return false;
-  }
-};
-
-// Create a dummy storage for SSR environments
-const dummyStorage = {
-  getItem: () => Promise.resolve(null),
-  setItem: () => Promise.resolve(),
-  removeItem: () => Promise.resolve(),
-};
-
-// Determine which storage to use
-const getStorage = () => {
-  if (Platform.OS !== 'web') return AsyncStorageAdapter;
-  return isLocalStorageAvailable() ? localStorage : dummyStorage;
-};
-
-// Create the Supabase client
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    storage: getStorage(),
-    autoRefreshToken: true,
-    persistSession: true,
-    detectSessionInUrl: Platform.OS === 'web' && isLocalStorageAvailable(),
-  },
-});
+export { supabase };
 
 // Helper functions for common Supabase operations
 
