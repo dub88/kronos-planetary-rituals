@@ -30,8 +30,13 @@ yarn-error.*
 *.pem
 
 # local env files
+.env
 .env*.local
 
 # typescript
 *.tsbuildinfo
 .vercel
+
+# Supabase backups
+supabase/*.backup
+supabase/*.backup.gz
