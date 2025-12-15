@@ -168,9 +168,6 @@ export const getCurrentPlanetaryPositions = async (
     const lon = calcGeocentricEclipticLonDeg(planet, date);
     const { sign, degree } = formatFromEclipticLon(lon);
 
-    // TEMP DEBUG: log raw data
-    console.log(`Planet ${planet}: lon=${lon.toFixed(2)}, sign=${sign}, degree=${degree.toFixed(2)}`);
-
     const planetSignIndex = signIndexFromEclipticLon(lon);
     const house = ascSignIndex === null ? undefined : ((planetSignIndex - ascSignIndex + 12) % 12) + 1;
 

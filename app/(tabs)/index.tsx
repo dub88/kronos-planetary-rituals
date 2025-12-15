@@ -61,6 +61,12 @@ export default function HomeScreen() {
   const dayRulerPosition = dayRulerPlanetId && planetPositions && planetPositions.length > 0 
     ? planetPositions.find(p => p.planet.toLowerCase() === dayRulerPlanetId.toLowerCase()) 
     : null;
+
+  const dayPlanetName = dayRulerPlanet?.name || 'Sun';
+  const dayOfPlanetLabel =
+    dayRulerPlanetId === 'sun' || dayRulerPlanetId === 'moon'
+      ? `Day of the ${dayPlanetName}`
+      : `${dayPlanetName}'s Day`;
   
   const handleLocationPromptClose = () => {
     setShowLocationPrompt(false);
@@ -80,8 +86,8 @@ export default function HomeScreen() {
               <KronosLogo size={56} />
               <View style={styles.heroTextCol}>
                 <Text style={[styles.heroKicker, { color: colors.textSecondary }]}>Today</Text>
-                <Text style={[styles.heroTitle, { color: colors.text }]}>
-                  {currentDayTheme.name} Day
+                <Text style={[styles.heroTitle, { color: colors.text }]}> 
+                  {dayOfPlanetLabel}
                 </Text>
               </View>
               <View style={[styles.heroOrb, { backgroundColor: `${colors.primary}14`, borderColor: colors.border }]}> 
