@@ -150,6 +150,13 @@ export default function LearnScreen() {
   const [selectedHymn, setSelectedHymn] = useState<string | null>(null);
   const [planetaryPositions, setPlanetaryPositions] = useState<PlanetaryPosition[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+
+  const getPlanetAccentColor = (planetId: PlanetDay) => {
+    const v = (colors as unknown as Record<string, unknown>)[planetId];
+    if (typeof v === 'string') return v;
+    const fallback = PlanetaryConstants.getPlanetById(planetId)?.color;
+    return fallback || colors.primary;
+  };
   
   const renderTopicContent = () => {
     if (!selectedTopic) return null;
@@ -305,6 +312,8 @@ export default function LearnScreen() {
               const planetInfo = PlanetaryConstants.getPlanetById(planetId);
               const planetColor = planetId; // Use the planet ID for color reference
               const planetSymbol = PlanetaryConstants.getPlanetById(planetId).symbol;
+
+              const accentColor = getPlanetAccentColor(planetId as PlanetDay);
               
               return (
                 <View
@@ -312,8 +321,8 @@ export default function LearnScreen() {
                   style={[
                     styles.planetCard, 
                     { 
-                      backgroundColor: colors.surface,
-                      borderColor: planetInfo.color || colors.text,
+                      backgroundColor: isDark ? colors.surface2 : colors.surface,
+                      borderColor: accentColor,
                       borderWidth: 2,
                     },
                     dignity?.status === 'Domicile' || dignity?.status === 'Exaltation' ? styles.rulerPlanetCard : null
@@ -323,7 +332,7 @@ export default function LearnScreen() {
                     styles.planetSymbol, 
                     { 
                       fontFamily: 'System',
-                      color: planetInfo.color || colors.text
+                      color: accentColor
                     }
                   ]}>{planetSymbol}</Text>
                   

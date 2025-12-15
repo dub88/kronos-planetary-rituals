@@ -14,6 +14,14 @@ const PlanetaryHourListItem = ({ hour }: PlanetaryHourListItemProps) => {
   
   // Get planet info
   const planet = getPlanetById(hour.planet);
+
+  const getPlanetAccentColor = (planetId: string) => {
+    const v = (colors as unknown as Record<string, unknown>)[planetId];
+    if (typeof v === 'string') return v;
+    return planet?.color || colors.text;
+  };
+
+  const accentColor = getPlanetAccentColor(hour.planet);
   
   // Format hour number
   const formatHourNumber = (num: number) => {
@@ -44,7 +52,7 @@ const PlanetaryHourListItem = ({ hour }: PlanetaryHourListItemProps) => {
       <View style={styles.hourInfoContainer}>
         <Text style={[
           styles.planetName,
-          { color: planet?.color || colors.text }
+          { color: accentColor }
         ]}>
           {planet?.name || hour.planet}
         </Text>

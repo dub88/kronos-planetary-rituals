@@ -125,7 +125,7 @@ const PlanetaryHourCard = () => {
   return (
     <View style={[
       styles.container, 
-      { backgroundColor: colors.surface },
+      { backgroundColor: isDark ? colors.surface2 : colors.surface },
       getBorderStyle()
     ]}>
       <View style={styles.header}>
@@ -163,7 +163,7 @@ const PlanetaryHourCard = () => {
           <View style={[
             styles.timeRemainingContainer, 
             {
-              backgroundColor: isDark ? colors.surface2 : `${colors.primary}14`,
+              backgroundColor: isDark ? colors.surface : `${colors.primary}14`,
               borderColor: `${colors.primary}26`,
               borderWidth: 1,
             }

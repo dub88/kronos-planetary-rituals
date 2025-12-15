@@ -28,6 +28,12 @@ export default function CalendarScreen() {
   // Get the ruling planet for the selected date
   const dayRulerPlanetId = getPlanetaryDayRuler(selectedDate);
   const dayRulerPlanet = getPlanetById(dayRulerPlanetId);
+
+  const getPlanetAccentColor = (planetId: string) => {
+    const v = (colors as unknown as Record<string, unknown>)[planetId];
+    if (typeof v === 'string') return v;
+    return colors.primary;
+  };
   
   // Load planetary hours for the selected date
   useEffect(() => {
@@ -208,7 +214,12 @@ export default function CalendarScreen() {
         <Text style={[styles.dayRulerLabel, { color: colors.textSecondary }]}>
           Ruling Planet:
         </Text>
-        <Text style={[styles.dayRulerValue, { color: dayRulerPlanet?.color || colors.primary }]}>
+        <Text
+          style={[
+            styles.dayRulerValue,
+            { color: dayRulerPlanetId ? getPlanetAccentColor(dayRulerPlanetId) : colors.primary },
+          ]}
+        >
           {dayRulerPlanet?.name || 'Sun'}
         </Text>
       </View>

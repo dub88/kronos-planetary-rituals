@@ -89,6 +89,12 @@ const TodaysRitualCard = ({ planet, planetPosition }: TodaysRitualCardProps) => 
   const buttonBackgroundColor = isCompletedToday ? colors.success : accentColor;
   const buttonTextColor = isLightColor(buttonBackgroundColor) ? colors.onPrimary : 'white';
 
+  const hexToRgba = (value: string, alpha: number) => {
+    const rgb = hexToRgb(value);
+    if (!rgb) return value;
+    return `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${alpha})`;
+  };
+
   const resolveCandleColor = () => {
     const lower = planet.candle.toLowerCase();
     const raw =
@@ -124,7 +130,12 @@ const TodaysRitualCard = ({ planet, planetPosition }: TodaysRitualCardProps) => 
   const candleColor = resolveCandleColor();
   
   return (
-    <Card variant="elevated" withGradient={isDark}>
+    <Card
+      variant="filled"
+      color={isDark ? colors.surface2 : colors.surface}
+      withGradient={!isDark}
+      style={{ borderColor: hexToRgba(accentColor, isDark ? 0.55 : 0.35), borderWidth: 1 }}
+    >
       <View style={styles.content}>
         <View style={styles.header}>
           <PlanetSymbol 
