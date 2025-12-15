@@ -1,5 +1,7 @@
 import { PlanetaryPosition, PlanetId } from '@/types';
-import * as Astronomy from 'astronomy-engine';
+import * as AstronomyNS from 'astronomy-engine';
+
+const Astronomy: typeof AstronomyNS = (AstronomyNS as unknown as { default?: typeof AstronomyNS }).default ?? AstronomyNS;
 
 // Define the PlanetaryDignity interface
 export interface PlanetaryDignity {
@@ -75,7 +77,7 @@ const formatFromEclipticLon = (lonDeg: number): { sign: string; degree: number }
   return { sign: ZODIAC_SIGNS[signIndex] || 'Unknown', degree };
 };
 
-const planetBodyMap: Record<PlanetId, Astronomy.Body | 'moon'> = {
+const planetBodyMap: Record<PlanetId, AstronomyNS.Body | 'moon'> = {
   sun: Astronomy.Body.Sun,
   moon: 'moon',
   mercury: Astronomy.Body.Mercury,
