@@ -77,17 +77,18 @@ const formatFromEclipticLon = (lonDeg: number): { sign: string; degree: number }
   return { sign: ZODIAC_SIGNS[signIndex] || 'Unknown', degree };
 };
 
-const planetBodyMap: Record<PlanetId, AstronomyNS.Body | 'moon'> = {
-  sun: Astronomy.Body.Sun,
-  moon: 'moon',
-  mercury: Astronomy.Body.Mercury,
-  venus: Astronomy.Body.Venus,
-  mars: Astronomy.Body.Mars,
-  jupiter: Astronomy.Body.Jupiter,
-  saturn: Astronomy.Body.Saturn,
-  uranus: Astronomy.Body.Uranus,
-  neptune: Astronomy.Body.Neptune,
-  pluto: Astronomy.Body.Pluto,
+// Use string body names directly - the Body enum is often undefined in Metro bundles
+const planetBodyNameMap: Record<PlanetId, string> = {
+  sun: 'Sun',
+  moon: 'Moon',
+  mercury: 'Mercury',
+  venus: 'Venus',
+  mars: 'Mars',
+  jupiter: 'Jupiter',
+  saturn: 'Saturn',
+  uranus: 'Uranus',
+  neptune: 'Neptune',
+  pluto: 'Pluto',
 };
 
 const maybeRadiansToDegrees = (angle: number): number => {
@@ -100,36 +101,39 @@ const maybeRadiansToDegrees = (angle: number): number => {
 
 const calcGeocentricEclipticLonDeg = (planet: PlanetId, date: Date): number => {
   const time = Astronomy.MakeTime(date);
+  const bodyName = planetBodyNameMap[planet];
+
+  // Sun: use dedicated SunPosition API
   if (planet === 'sun') {
-    return normalizeAngle360(maybeRadiansToDegrees(Astronomy.SunPosition(time).elon));
+    return normalizeAngle360(Astronomy.SunPosition(time).elon);
   }
 
-  if (planet === 'moon') {
-    // Prefer dedicated helper if available.
-    const moonEcl = (Astronomy as unknown as { EclipticGeoMoon?: (t: unknown) => { elon: number } }).EclipticGeoMoon;
-    if (moonEcl) {
-      return normalizeAngle360(maybeRadiansToDegrees(moonEcl(time).elon));
-    }
-    const vec = Astronomy.GeoMoon(time);
-    return normalizeAngle360(maybeRadiansToDegrees(Astronomy.Ecliptic(vec).elon));
-  }
-
-  const body = planetBodyMap[planet];
-  if (typeof body === 'string') {
-    return 0;
-  }
-
-  // Use the direct longitude API when possible. This avoids vector/coord-frame quirks across runtimes.
+  // For all bodies including Moon: use EclipticLongitude with string body name
+  // astronomy-engine accepts string body names like 'Moon', 'Mars', etc.
   try {
-    const lon = (Astronomy as unknown as { EclipticLongitude: (b: AstronomyNS.Body, t: unknown) => number }).EclipticLongitude(
-      body,
-      time
-    );
-    return normalizeAngle360(maybeRadiansToDegrees(lon));
-  } catch {
-    const vec = Astronomy.GeoVector(body, time, true);
-    return normalizeAngle360(maybeRadiansToDegrees(Astronomy.Ecliptic(vec).elon));
+    const eclipticLongitude = (Astronomy as unknown as { EclipticLongitude: (body: string, time: unknown) => number }).EclipticLongitude;
+    if (eclipticLongitude) {
+      const lon = eclipticLongitude(bodyName, time);
+      return normalizeAngle360(lon);
+    }
+  } catch (e) {
+    console.warn(`EclipticLongitude failed for ${planet}:`, e);
   }
+
+  // Fallback: use GeoVector + Ecliptic with string body name
+  try {
+    const geoVector = (Astronomy as unknown as { GeoVector: (body: string, time: unknown, aberration: boolean) => unknown }).GeoVector;
+    const ecliptic = (Astronomy as unknown as { Ecliptic: (vec: unknown) => { elon: number } }).Ecliptic;
+    if (geoVector && ecliptic) {
+      const vec = geoVector(bodyName, time, true);
+      return normalizeAngle360(ecliptic(vec).elon);
+    }
+  } catch (e) {
+    console.warn(`GeoVector/Ecliptic failed for ${planet}:`, e);
+  }
+
+  console.error(`Could not compute longitude for ${planet}`);
+  return 0;
 };
 
 const isRetrograde = (planet: PlanetId, date: Date): boolean => {
