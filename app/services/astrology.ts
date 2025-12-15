@@ -103,30 +103,20 @@ const calcGeocentricEclipticLonDeg = (planet: PlanetId, date: Date): number => {
   const time = Astronomy.MakeTime(date);
   const bodyName = planetBodyNameMap[planet];
 
-  // Sun: use dedicated SunPosition API
+  // Sun: use dedicated SunPosition API (geocentric by definition)
   if (planet === 'sun') {
     return normalizeAngle360(Astronomy.SunPosition(time).elon);
   }
 
-  // For all bodies including Moon: use EclipticLongitude with string body name
-  // astronomy-engine accepts string body names like 'Moon', 'Mars', etc.
-  try {
-    const eclipticLongitude = (Astronomy as unknown as { EclipticLongitude: (body: string, time: unknown) => number }).EclipticLongitude;
-    if (eclipticLongitude) {
-      const lon = eclipticLongitude(bodyName, time);
-      return normalizeAngle360(lon);
-    }
-  } catch (e) {
-    console.warn(`EclipticLongitude failed for ${planet}:`, e);
-  }
-
-  // Fallback: use GeoVector + Ecliptic with string body name
+  // For all other bodies: use GeoVector + Ecliptic for GEOCENTRIC coordinates
+  // (EclipticLongitude returns heliocentric which is wrong for astrology)
   try {
     const geoVector = (Astronomy as unknown as { GeoVector: (body: string, time: unknown, aberration: boolean) => unknown }).GeoVector;
     const ecliptic = (Astronomy as unknown as { Ecliptic: (vec: unknown) => { elon: number } }).Ecliptic;
     if (geoVector && ecliptic) {
       const vec = geoVector(bodyName, time, true);
-      return normalizeAngle360(ecliptic(vec).elon);
+      const result = ecliptic(vec);
+      return normalizeAngle360(result.elon);
     }
   } catch (e) {
     console.warn(`GeoVector/Ecliptic failed for ${planet}:`, e);
