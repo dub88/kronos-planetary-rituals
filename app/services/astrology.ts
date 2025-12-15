@@ -52,8 +52,10 @@ const calcAscendantEclipticLonDeg = (date: Date, latitude: number, longitude: nu
   const eps = (meanObliquityDeg(date) * Math.PI) / 180;
   const phi = (latitude * Math.PI) / 180;
 
+  const time = Astronomy.MakeTime(date);
+
   // Astronomy Engine defines longitude as degrees east of Greenwich.
-  const gastHours = Astronomy.SiderealTime(date);
+  const gastHours = Astronomy.SiderealTime(time);
   const lstDeg = normalizeAngle360(gastHours * 15 + longitude);
   const theta = (lstDeg * Math.PI) / 180;
 
@@ -87,12 +89,13 @@ const planetBodyMap: Record<PlanetId, Astronomy.Body | 'moon'> = {
 };
 
 const calcGeocentricEclipticLonDeg = (planet: PlanetId, date: Date): number => {
+  const time = Astronomy.MakeTime(date);
   if (planet === 'sun') {
-    return normalizeAngle360(Astronomy.SunPosition(date).elon);
+    return normalizeAngle360(Astronomy.SunPosition(time).elon);
   }
 
   if (planet === 'moon') {
-    const vec = Astronomy.GeoMoon(date);
+    const vec = Astronomy.GeoMoon(time);
     return normalizeAngle360(Astronomy.Ecliptic(vec).elon);
   }
 
@@ -101,7 +104,7 @@ const calcGeocentricEclipticLonDeg = (planet: PlanetId, date: Date): number => {
     return 0;
   }
 
-  const vec = Astronomy.GeoVector(body, date, true);
+  const vec = Astronomy.GeoVector(body, time, true);
   return normalizeAngle360(Astronomy.Ecliptic(vec).elon);
 };
 
