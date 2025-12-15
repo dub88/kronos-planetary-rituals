@@ -47,6 +47,9 @@ const lightColors = {
   mars: '#F45D5D',          // Bright red
   jupiter: '#7E57C2',       // Purple
   saturn: '#5D5A53',        // Warm gray
+  uranus: '#26C6DA',        // Teal
+  neptune: '#42A5F5',       // Blue
+  pluto: '#8D6E63',         // Earth brown
 };
 
 const darkColors = {
@@ -80,6 +83,9 @@ const darkColors = {
   mars: '#EF9A9A',
   jupiter: '#B39DDB',
   saturn: '#8D6E63',
+  uranus: '#4DD0E1',
+  neptune: '#64B5F6',
+  pluto: '#A1887F',
 };
 
 // Create theme context

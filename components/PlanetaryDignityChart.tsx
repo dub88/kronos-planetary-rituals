@@ -93,7 +93,15 @@ const PlanetaryDignityChart = () => {
         <View style={styles.chartContainer}>
           {planets.map(planet => {
             const position = planetPositions.find(p => p.planet === planet.id);
-            const dignity = position ? getPlanetaryDignity(planet.id, position.sign) : null;
+            const dignity = position && (
+              planet.id === 'sun' ||
+              planet.id === 'moon' ||
+              planet.id === 'mercury' ||
+              planet.id === 'venus' ||
+              planet.id === 'mars' ||
+              planet.id === 'jupiter' ||
+              planet.id === 'saturn'
+            ) ? getPlanetaryDignity(planet.id, position.sign) : null;
             const zodiacSymbol = position ? getZodiacSymbol(position.sign) : null;
             
             return (

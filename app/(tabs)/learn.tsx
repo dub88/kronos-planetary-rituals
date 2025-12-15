@@ -8,8 +8,9 @@ import PlanetaryConstants, { chaldeanOrder, planetDayMap } from '@/constants/pla
 import { hymns } from '@/constants/hymns';
 import PlanetSymbol from '@/components/ui/PlanetSymbol';
 import { getCurrentPlanetaryPositions, getPlanetaryDignity, PlanetaryDignity } from '@/app/services/astrology';
-import { PlanetaryPosition, PlanetDay } from '@/types';
+import { PlanetaryPosition, PlanetDay, PlanetId } from '@/types';
 import { useTheme } from '@/components/ThemeProvider';
+import { useLocationStore } from '@/stores/locationStore';
 
 // Topics will be rendered with the current theme colors
 const createTopics = (colors: any) => [
@@ -145,16 +146,17 @@ Saturn ♄
 export default function LearnScreen() {
   const router = useRouter();
   const { colors, isDark } = useTheme();
+  const { location } = useLocationStore();
   const topics = React.useMemo(() => createTopics(colors), [colors]);
   const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
   const [selectedHymn, setSelectedHymn] = useState<string | null>(null);
   const [planetaryPositions, setPlanetaryPositions] = useState<PlanetaryPosition[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  const getPlanetAccentColor = (planetId: PlanetDay) => {
+  const getPlanetAccentColor = (planetId: PlanetId) => {
     const v = (colors as unknown as Record<string, unknown>)[planetId];
     if (typeof v === 'string') return v;
-    const fallback = PlanetaryConstants.getPlanetById(planetId)?.color;
+    const fallback = PlanetaryConstants.getPlanetById(planetId as PlanetDay)?.color;
     return fallback || colors.primary;
   };
   
@@ -258,7 +260,10 @@ export default function LearnScreen() {
     const fetchPlanetaryData = async () => {
       try {
         setIsLoading(true);
-        const positions = await getCurrentPlanetaryPositions();
+        const positions = await getCurrentPlanetaryPositions({
+          latitude: location?.latitude,
+          longitude: location?.longitude,
+        });
         setPlanetaryPositions(positions);
       } catch (error) {
         console.error('Error fetching planetary positions:', error);
@@ -268,7 +273,7 @@ export default function LearnScreen() {
     };
     
     fetchPlanetaryData();
-  }, []);
+  }, [location?.latitude, location?.longitude]);
   
   // Get the current dignity for a planet based on its position
   const getCurrentDignity = (planetId: string): PlanetaryDignity | null => {
@@ -293,6 +298,32 @@ export default function LearnScreen() {
   };
   
   const renderPlanetsList = () => {
+    const displayPlanets: PlanetId[] = [
+      'saturn',
+      'jupiter',
+      'mars',
+      'sun',
+      'venus',
+      'mercury',
+      'moon',
+      'uranus',
+      'neptune',
+      'pluto',
+    ];
+
+    const planetName: Record<PlanetId, string> = {
+      sun: 'Sun',
+      moon: 'Moon',
+      mercury: 'Mercury',
+      venus: 'Venus',
+      mars: 'Mars',
+      jupiter: 'Jupiter',
+      saturn: 'Saturn',
+      uranus: 'Uranus',
+      neptune: 'Neptune',
+      pluto: 'Pluto',
+    };
+
     return (
       <View style={styles.planetsSection}>
         <Text style={[styles.sectionTitle, { fontFamily: 'System' }]}>Current Planetary Dignities</Text>
@@ -306,14 +337,10 @@ export default function LearnScreen() {
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={styles.planetsScrollContent}
           >
-            {chaldeanOrder.map(planetId => {
+            {displayPlanets.map((planetId) => {
               const position = planetaryPositions.find(p => p.planet === planetId);
               const dignity = position ? getCurrentDignity(planetId) : null;
-              const planetInfo = PlanetaryConstants.getPlanetById(planetId);
-              const planetColor = planetId; // Use the planet ID for color reference
-              const planetSymbol = PlanetaryConstants.getPlanetById(planetId).symbol;
-
-              const accentColor = getPlanetAccentColor(planetId as PlanetDay);
+              const accentColor = getPlanetAccentColor(planetId);
               
               return (
                 <View
@@ -328,13 +355,9 @@ export default function LearnScreen() {
                     dignity?.status === 'Domicile' || dignity?.status === 'Exaltation' ? styles.rulerPlanetCard : null
                   ]}
                 >
-                  <Text style={[
-                    styles.planetSymbol, 
-                    { 
-                      fontFamily: 'System',
-                      color: accentColor
-                    }
-                  ]}>{planetSymbol}</Text>
+                  <View style={{ marginBottom: 8 }}>
+                    <PlanetSymbol planetId={planetId} size={32} color={accentColor} />
+                  </View>
                   
                   <Text style={[
                     styles.planetName, 
@@ -342,7 +365,7 @@ export default function LearnScreen() {
                       fontFamily: 'System',
                       color: colors.text
                     }
-                  ]}>{planetInfo.name}</Text>
+                  ]}>{planetName[planetId]}</Text>
                   
                   {position && (
                     <Text style={[

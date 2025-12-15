@@ -31,7 +31,15 @@ const AboutPlanetCard = ({ planet, planetPosition }: AboutPlanetCardProps) => {
   const positionToUse = correctPlanetPosition || planetPosition;
   
   // Get the planetary dignity if position is available
-  const dignity = positionToUse ? getPlanetaryDignity(planet.id, positionToUse.sign) : null;
+  const dignity = positionToUse && (
+    planet.id === 'sun' ||
+    planet.id === 'moon' ||
+    planet.id === 'mercury' ||
+    planet.id === 'venus' ||
+    planet.id === 'mars' ||
+    planet.id === 'jupiter' ||
+    planet.id === 'saturn'
+  ) ? getPlanetaryDignity(planet.id, positionToUse.sign) : null;
   const zodiacSymbol = positionToUse ? getZodiacSymbol(positionToUse.sign) : null;
   
   console.log(`AboutPlanetCard for ${planet.id}:`, positionToUse);

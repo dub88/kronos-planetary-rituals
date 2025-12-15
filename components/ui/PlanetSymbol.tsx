@@ -40,6 +40,9 @@ const PlanetSymbol: React.FC<PlanetSymbolProps> = ({
       case 'mars': return '♂';
       case 'jupiter': return '♃';
       case 'saturn': return '♄';
+      case 'uranus': return '♅';
+      case 'neptune': return '♆';
+      case 'pluto': return '♇';
       default: return '☉';
     }
   };

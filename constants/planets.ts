@@ -1,5 +1,5 @@
 import { colors } from './colors';
-import { Planet, PlanetDay } from '../types';
+import { Planet, PlanetDay, PlanetId } from '../types';
 
 // Ensure the planets array is properly initialized
 export const planets: Planet[] = [
@@ -73,6 +73,36 @@ export const planets: Planet[] = [
     description: 'Saturn represents discipline, responsibility, and time. It governs structure, limitations, and karmic lessons.',
     ritual: 'Light a black candle, recite the Orphic Hymn to Kronos, and focus on discipline, structure, and overcoming limitations.',
   },
+  {
+    id: 'uranus',
+    name: 'Uranus',
+    day: '',
+    color: (colors as unknown as Record<string, string>).uranus || '#26C6DA',
+    candle: '',
+    symbol: '♅',
+    description: 'Uranus represents change, awakening, and liberation. It governs innovation, disruption, and sudden insight.',
+    ritual: '',
+  },
+  {
+    id: 'neptune',
+    name: 'Neptune',
+    day: '',
+    color: (colors as unknown as Record<string, string>).neptune || '#42A5F5',
+    candle: '',
+    symbol: '♆',
+    description: 'Neptune represents dreams, intuition, and transcendence. It governs imagination, spirituality, and dissolution of boundaries.',
+    ritual: '',
+  },
+  {
+    id: 'pluto',
+    name: 'Pluto',
+    day: '',
+    color: (colors as unknown as Record<string, string>).pluto || '#8D6E63',
+    candle: '',
+    symbol: '♇',
+    description: 'Pluto represents transformation, power, and rebirth. It governs deep change, shadow work, and regeneration.',
+    ritual: '',
+  },
 ];
 
 // Ensure we have a valid planets array
@@ -104,7 +134,7 @@ export const getPlanetByDay = (dayOfWeek: number): Planet => {
 };
 
 // Function to get planet by ID
-export const getPlanetById = (id: PlanetDay): Planet => {
+export const getPlanetById = (id: PlanetId): Planet => {
   try {
     // Find the planet by ID, with fallback to Sun if not found
     const planet = planets.find(planet => planet.id === id);

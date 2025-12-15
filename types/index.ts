@@ -50,9 +50,10 @@ export interface Location {
 
 // Planet types
 export type PlanetDay = 'sun' | 'moon' | 'mars' | 'mercury' | 'jupiter' | 'venus' | 'saturn';
+export type PlanetId = PlanetDay | 'uranus' | 'neptune' | 'pluto';
 
 export interface Planet {
-  id: PlanetDay;
+  id: PlanetId;
   name: string;
   symbol: string;
   color: string;
@@ -84,7 +85,7 @@ export interface PlanetaryHour {
 
 // Planetary position types
 export interface PlanetaryPosition {
-  planet: PlanetDay;
+  planet: PlanetId;
   sign: string;
   degree: number;
   isRetrograde: boolean;

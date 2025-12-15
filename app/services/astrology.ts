@@ -1,5 +1,5 @@
-import { PlanetaryPosition, PlanetDay } from '@/types';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { PlanetaryPosition, PlanetId } from '@/types';
+import * as Astronomy from 'astronomy-engine';
 
 // Define the PlanetaryDignity interface
 export interface PlanetaryDignity {
@@ -7,197 +7,159 @@ export interface PlanetaryDignity {
   description: string;
 }
 
-// API key should be stored in environment variables in a production app
-// Note: If this API key is expired, the app will gracefully fall back to mock data
-const API_KEY = 'fcd5545544msh9720d2b5a98d578p17daecjsn524fcd4c8648';
-const API_HOST = 'astrologer.p.rapidapi.com';
+type PlanetaryPositionsOptions = {
+  date?: Date;
+  latitude?: number;
+  longitude?: number;
+};
 
-// Cache key for storing planetary positions
-const PLANETARY_POSITIONS_CACHE_KEY = 'planetary_positions_cache';
-const CACHE_EXPIRY_TIME = 6 * 60 * 60 * 1000; // 6 hours in milliseconds
+const ZODIAC_SIGNS = [
+  'Aries',
+  'Taurus',
+  'Gemini',
+  'Cancer',
+  'Leo',
+  'Virgo',
+  'Libra',
+  'Scorpio',
+  'Sagittarius',
+  'Capricorn',
+  'Aquarius',
+  'Pisces',
+] as const;
 
-/**
- * Fetches the current planetary positions from the Astrologer API with caching
- */
-export const getCurrentPlanetaryPositions = async (): Promise<PlanetaryPosition[]> => {
-  try {
-    // Check cache first
-    const cachedData = await getCachedPlanetaryPositions();
-    if (cachedData) {
-      console.log('Using cached planetary positions');
-      return cachedData;
-    }
-    
-    // Log that we're attempting to fetch data
-    console.log('Cache expired or not found. Fetching planetary positions from API...');
-    
-    // Set a timeout for the fetch request
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
-    
-    try {
-      const response = await fetch('https://astrologer.p.rapidapi.com/api/v4/now', {
-        method: 'GET',
-        headers: {
-          'Accept': 'application/json',
-          'X-RapidAPI-Host': API_HOST,
-          'X-RapidAPI-Key': API_KEY
-        },
-        signal: controller.signal
-      });
-      
-      clearTimeout(timeoutId);
+const normalizeAngle360 = (deg: number): number => {
+  const x = deg % 360;
+  return x < 0 ? x + 360 : x;
+};
 
-    if (!response.ok) {
-      console.error(`API request failed with status ${response.status}`);
-      console.log('Falling back to mock planetary positions');
-      return getMockPlanetaryPositions();
-    }
+const normalizeAngle180 = (deg: number): number => {
+  const x = normalizeAngle360(deg);
+  return x > 180 ? x - 360 : x;
+};
 
-    const data = await response.json();
-    console.log('API response received');
-    
-    // Validate the response data structure
-    if (!data || !data.data || data.status !== 'OK') {
-      console.error('Invalid API response structure');
-      return getMockPlanetaryPositions();
-    }
-    
-    // Extract and format the planetary positions
-    const planets: PlanetDay[] = ['sun', 'moon', 'mercury', 'venus', 'mars', 'jupiter', 'saturn'];
-    const results = planets.map(planetId => {
-      const planetData = data.data[planetId.toLowerCase()];
-      
-      if (!planetData) {
-        console.error(`No data found for planet: ${planetId}`);
-        return {
-          planet: planetId,
-          sign: 'Unknown',
-          degree: 0,
-          isRetrograde: false
-        };
-      }
-      
-      // Extract the sign from the API response
-      // The sign is in the format 'Ari', 'Tau', etc. and needs to be converted to full name
-      const signMap: Record<string, string> = {
-        'Ari': 'Aries',
-        'Tau': 'Taurus',
-        'Gem': 'Gemini',
-        'Can': 'Cancer',
-        'Leo': 'Leo',
-        'Vir': 'Virgo',
-        'Lib': 'Libra',
-        'Sco': 'Scorpio',
-        'Sag': 'Sagittarius',
-        'Cap': 'Capricorn',
-        'Aqu': 'Aquarius',
-        'Pis': 'Pisces'
-      };
-      
-      const signCode = planetData.sign;
-      const fullSignName = signMap[signCode] || signCode || 'Unknown';
-      
-      const result = {
-        planet: planetId,
-        sign: fullSignName,
-        degree: planetData.abs_pos || 0,
-        isRetrograde: !!planetData.retrograde
-      };
-      
-      console.log(`Planet ${planetId} is in ${result.sign} at ${result.degree}° ${result.isRetrograde ? '(R)' : ''}`);
-      return result;
-    });
-    
-    console.log('Successfully parsed planetary positions');
-    
-    // Cache the results
-    await cachePlanetaryPositions(results);
-    
-    return results;
-    } catch (fetchError) {
-      clearTimeout(timeoutId);
-      console.error('Fetch error in planetary positions API call:', fetchError);
-      console.log('Network request failed, using mock data instead');
-      return getMockPlanetaryPositions();
-    }
-  } catch (error) {
-    console.error('Error in getCurrentPlanetaryPositions:', error);
-    // Return mock data in case of any error
-    console.log('Using mock planetary positions due to error');
-    return getMockPlanetaryPositions();
+const julianCenturiesSinceJ2000 = (date: Date): number => {
+  const jd = Astronomy.MakeTime(date).tt;
+  return (jd - 2451545.0) / 36525.0;
+};
+
+const meanObliquityDeg = (date: Date): number => {
+  const T = julianCenturiesSinceJ2000(date);
+  return 23.439291 - 0.0130042 * T;
+};
+
+const calcAscendantEclipticLonDeg = (date: Date, latitude: number, longitude: number): number => {
+  const eps = (meanObliquityDeg(date) * Math.PI) / 180;
+  const phi = (latitude * Math.PI) / 180;
+
+  // Astronomy Engine defines longitude as degrees east of Greenwich.
+  const gastHours = Astronomy.SiderealTime(date);
+  const lstDeg = normalizeAngle360(gastHours * 15 + longitude);
+  const theta = (lstDeg * Math.PI) / 180;
+
+  const y = Math.sin(theta) * Math.cos(eps) + Math.tan(phi) * Math.sin(eps);
+  const x = Math.cos(theta);
+  const lambda = Math.atan2(y, x);
+
+  return normalizeAngle360((lambda * 180) / Math.PI);
+};
+
+const signIndexFromEclipticLon = (lonDeg: number): number => Math.floor(normalizeAngle360(lonDeg) / 30);
+
+const formatFromEclipticLon = (lonDeg: number): { sign: string; degree: number } => {
+  const lon = normalizeAngle360(lonDeg);
+  const signIndex = signIndexFromEclipticLon(lon);
+  const degree = lon - signIndex * 30;
+  return { sign: ZODIAC_SIGNS[signIndex] || 'Unknown', degree };
+};
+
+const planetBodyMap: Record<PlanetId, Astronomy.Body | 'moon'> = {
+  sun: Astronomy.Body.Sun,
+  moon: 'moon',
+  mercury: Astronomy.Body.Mercury,
+  venus: Astronomy.Body.Venus,
+  mars: Astronomy.Body.Mars,
+  jupiter: Astronomy.Body.Jupiter,
+  saturn: Astronomy.Body.Saturn,
+  uranus: Astronomy.Body.Uranus,
+  neptune: Astronomy.Body.Neptune,
+  pluto: Astronomy.Body.Pluto,
+};
+
+const calcGeocentricEclipticLonDeg = (planet: PlanetId, date: Date): number => {
+  if (planet === 'sun') {
+    return normalizeAngle360(Astronomy.SunPosition(date).elon);
   }
+
+  if (planet === 'moon') {
+    const vec = Astronomy.GeoMoon(date);
+    return normalizeAngle360(Astronomy.Ecliptic(vec).elon);
+  }
+
+  const body = planetBodyMap[planet];
+  if (typeof body === 'string') {
+    return 0;
+  }
+
+  const vec = Astronomy.GeoVector(body, date, true);
+  return normalizeAngle360(Astronomy.Ecliptic(vec).elon);
+};
+
+const isRetrograde = (planet: PlanetId, date: Date): boolean => {
+  // Compare apparent ecliptic longitude with a prior time slice.
+  const prev = new Date(date.getTime() - 6 * 60 * 60 * 1000);
+  const lonNow = calcGeocentricEclipticLonDeg(planet, date);
+  const lonPrev = calcGeocentricEclipticLonDeg(planet, prev);
+  const delta = normalizeAngle180(lonNow - lonPrev);
+  return delta < 0;
 };
 
 /**
- * Caches planetary positions with timestamp
+ * Calculates current planetary positions locally (tropical zodiac).
  */
-const cachePlanetaryPositions = async (positions: PlanetaryPosition[]): Promise<void> => {
-  try {
-    const cacheData = {
-      positions,
-      timestamp: Date.now()
-    };
-    await AsyncStorage.setItem(PLANETARY_POSITIONS_CACHE_KEY, JSON.stringify(cacheData));
-    console.log('Planetary positions cached successfully');
-  } catch (error) {
-    console.error('Error caching planetary positions:', error);
-  }
-};
+export const getCurrentPlanetaryPositions = async (
+  options: PlanetaryPositionsOptions = {}
+): Promise<PlanetaryPosition[]> => {
+  const date = options.date ?? new Date();
+  const latitude = options.latitude;
+  const longitude = options.longitude;
 
-/**
- * Retrieves cached planetary positions if they exist and are not expired
- */
-const getCachedPlanetaryPositions = async (): Promise<PlanetaryPosition[] | null> => {
-  try {
-    const cachedData = await AsyncStorage.getItem(PLANETARY_POSITIONS_CACHE_KEY);
-    
-    if (!cachedData) {
-      console.log('No cached planetary positions found');
-      return null;
-    }
-    
-    const { positions, timestamp } = JSON.parse(cachedData);
-    const now = Date.now();
-    
-    // Check if cache is expired (older than CACHE_EXPIRY_TIME)
-    if (now - timestamp > CACHE_EXPIRY_TIME) {
-      console.log('Cached planetary positions expired');
-      return null;
-    }
-    
-    console.log('Using cached planetary positions from', new Date(timestamp).toLocaleString());
-    return positions;
-  } catch (error) {
-    console.error('Error retrieving cached planetary positions:', error);
-    return null;
-  }
-};
-
-/**
- * Provides mock planetary positions for testing or when the API fails
- */
-const getMockPlanetaryPositions = (): PlanetaryPosition[] => {
-  // Get current date to make mock data feel more dynamic
-  const today = new Date();
-  const day = today.getDate();
-  
-  // Updated mock positions to match March 2025 placements with slight variations based on day
-  const mockPositions: PlanetaryPosition[] = [
-    { planet: 'sun', sign: 'Pisces', degree: (22 + (day % 5)), isRetrograde: false },
-    { planet: 'moon', sign: 'Virgo', degree: (6 + (day % 10)), isRetrograde: false },
-    { planet: 'mercury', sign: 'Aries', degree: (9 + (day % 3)), isRetrograde: true },
-    { planet: 'venus', sign: 'Aries', degree: (8 + (day % 4)), isRetrograde: false },
-    { planet: 'mars', sign: 'Cancer', degree: (19 + (day % 2)), isRetrograde: false },
-    { planet: 'jupiter', sign: 'Gemini', degree: (13 + (day % 1)), isRetrograde: false },
-    { planet: 'saturn', sign: 'Pisces', degree: (22 + (day % 1)), isRetrograde: false }
+  const planets: PlanetId[] = [
+    'saturn',
+    'jupiter',
+    'mars',
+    'sun',
+    'venus',
+    'mercury',
+    'moon',
+    'uranus',
+    'neptune',
+    'pluto',
   ];
-  
-  // Cache these mock positions to avoid generating different ones on each call
-  cachePlanetaryPositions(mockPositions);
-  
-  console.log('Using mock planetary positions (API fallback)');
-  return mockPositions;
+
+  let ascSignIndex: number | null = null;
+  if (typeof latitude === 'number' && typeof longitude === 'number') {
+    const ascLon = calcAscendantEclipticLonDeg(date, latitude, longitude);
+    ascSignIndex = signIndexFromEclipticLon(ascLon);
+  }
+
+  const results: PlanetaryPosition[] = planets.map((planet) => {
+    const lon = calcGeocentricEclipticLonDeg(planet, date);
+    const { sign, degree } = formatFromEclipticLon(lon);
+
+    const planetSignIndex = signIndexFromEclipticLon(lon);
+    const house = ascSignIndex === null ? undefined : ((planetSignIndex - ascSignIndex + 12) % 12) + 1;
+
+    return {
+      planet,
+      sign,
+      degree,
+      isRetrograde: isRetrograde(planet, date),
+      house,
+    };
+  });
+
+  return results;
 };
 
 /**

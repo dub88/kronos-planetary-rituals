@@ -2,14 +2,14 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { PlanetaryHour as AppPlanetaryHour } from '../app/app-types';
-import { PlanetDay, PlanetaryHour as TypesPlanetaryHour, PlanetaryPosition as TypesPlanetaryPosition } from '../types';
+import { PlanetDay, PlanetId, PlanetaryHour as TypesPlanetaryHour, PlanetaryPosition as TypesPlanetaryPosition } from '../types';
 import { getPlanetaryDayRuler } from '../utils/planetaryHours';
 import { calculatePlanetaryHours } from '../app/services/planetaryHours';
 import { getCurrentPlanetaryPositions } from '../app/services/astrology';
 
 // Define PlanetaryPosition interface for internal use
 interface PlanetaryPosition extends TypesPlanetaryPosition {
-  planet: PlanetDay;
+  planet: PlanetId;
   sign: string;
   degree: number;
   isRetrograde: boolean;
@@ -27,7 +27,7 @@ interface PlanetaryState {
   // Actions
   fetchPlanetaryHours: (latitude?: number, longitude?: number) => Promise<void>;
   updateCurrentHour: () => void;
-  fetchPlanetaryPositions: () => Promise<void>;
+  fetchPlanetaryPositions: (latitude?: number, longitude?: number) => Promise<void>;
 }
 
 export const usePlanetaryStore = create<PlanetaryState>()(
@@ -160,12 +160,15 @@ export const usePlanetaryStore = create<PlanetaryState>()(
         }
       },
       
-      fetchPlanetaryPositions: async () => {
+      fetchPlanetaryPositions: async (latitude, longitude) => {
         set({ isLoading: true, error: null });
         
         try {
           // Fetch planetary positions from the astrology service
-          const positions = await getCurrentPlanetaryPositions();
+          const positions = await getCurrentPlanetaryPositions({
+            latitude,
+            longitude,
+          });
           
           // Map the positions to the format expected by the store
           const planetPositions: PlanetaryPosition[] = positions.map(pos => ({
