@@ -90,15 +90,28 @@ const planetBodyMap: Record<PlanetId, AstronomyNS.Body | 'moon'> = {
   pluto: Astronomy.Body.Pluto,
 };
 
+const maybeRadiansToDegrees = (angle: number): number => {
+  // If a runtime returns radians (0..2π) instead of degrees (0..360), convert.
+  if (angle > 0 && angle <= 2 * Math.PI + 0.1) {
+    return (angle * 180) / Math.PI;
+  }
+  return angle;
+};
+
 const calcGeocentricEclipticLonDeg = (planet: PlanetId, date: Date): number => {
   const time = Astronomy.MakeTime(date);
   if (planet === 'sun') {
-    return normalizeAngle360(Astronomy.SunPosition(time).elon);
+    return normalizeAngle360(maybeRadiansToDegrees(Astronomy.SunPosition(time).elon));
   }
 
   if (planet === 'moon') {
+    // Prefer dedicated helper if available.
+    const moonEcl = (Astronomy as unknown as { EclipticGeoMoon?: (t: unknown) => { elon: number } }).EclipticGeoMoon;
+    if (moonEcl) {
+      return normalizeAngle360(maybeRadiansToDegrees(moonEcl(time).elon));
+    }
     const vec = Astronomy.GeoMoon(time);
-    return normalizeAngle360(Astronomy.Ecliptic(vec).elon);
+    return normalizeAngle360(maybeRadiansToDegrees(Astronomy.Ecliptic(vec).elon));
   }
 
   const body = planetBodyMap[planet];
@@ -106,8 +119,17 @@ const calcGeocentricEclipticLonDeg = (planet: PlanetId, date: Date): number => {
     return 0;
   }
 
-  const vec = Astronomy.GeoVector(body, time, true);
-  return normalizeAngle360(Astronomy.Ecliptic(vec).elon);
+  // Use the direct longitude API when possible. This avoids vector/coord-frame quirks across runtimes.
+  try {
+    const lon = (Astronomy as unknown as { EclipticLongitude: (b: AstronomyNS.Body, t: unknown) => number }).EclipticLongitude(
+      body,
+      time
+    );
+    return normalizeAngle360(maybeRadiansToDegrees(lon));
+  } catch {
+    const vec = Astronomy.GeoVector(body, time, true);
+    return normalizeAngle360(maybeRadiansToDegrees(Astronomy.Ecliptic(vec).elon));
+  }
 };
 
 const isRetrograde = (planet: PlanetId, date: Date): boolean => {
