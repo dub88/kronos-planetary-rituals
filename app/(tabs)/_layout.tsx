@@ -105,30 +105,28 @@ export default function TabLayout() {
           ),
         }}
       />
-      {!isGuest ? (
-        <>
-          <Tabs.Screen
-            name="profile"
-            options={{
-              title: "Profile",
-              headerTitle: "Profile",
-              tabBarIcon: ({ color }) => (
-                <User size={24} color={color} />
-              ),
-            }}
-          />
-          <Tabs.Screen
-            name="settings"
-            options={{
-              title: "Settings",
-              headerTitle: "Settings",
-              tabBarIcon: ({ color }) => (
-                <Settings size={24} color={color} />
-              ),
-            }}
-          />
-        </>
-      ) : null}
+      <Tabs.Screen
+        name="profile"
+        options={{
+          href: isGuest ? null : undefined,
+          title: "Profile",
+          headerTitle: "Profile",
+          tabBarIcon: ({ color }) => (
+            <User size={24} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="settings"
+        options={{
+          href: isGuest ? null : undefined,
+          title: "Settings",
+          headerTitle: "Settings",
+          tabBarIcon: ({ color }) => (
+            <Settings size={24} color={color} />
+          ),
+        }}
+      />
     </Tabs>
   );
 }
