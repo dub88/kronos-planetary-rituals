@@ -8,6 +8,7 @@ import { storeEvents } from './events';
 interface AuthState {
   user: User | null;
   session: Session | null;
+  isGuest: boolean;
   isLoading: boolean;
   error: string | null;
   
@@ -16,6 +17,8 @@ interface AuthState {
   register: (email: string, password: string, name: string) => Promise<void>;
   loginWithGoogle: () => Promise<void>;
   logout: () => Promise<void>;
+  enterGuestMode: () => void;
+  exitGuestMode: () => void;
   clearError: () => void;
 }
 
@@ -24,6 +27,7 @@ export const useAuthStore = create<AuthState>()(
     (set, get) => ({
       user: null,
       session: null,
+      isGuest: false,
       isLoading: false,
       error: null,
       
@@ -37,7 +41,7 @@ export const useAuthStore = create<AuthState>()(
             const { data: { user }, error: userError } = await supabase.auth.getUser();
             if (userError) throw userError;
             
-            set({ user, session });
+            set({ user, session, isGuest: false });
             
             // Notify other stores that auth is initialized
             storeEvents.emit('auth:initialized');
@@ -82,7 +86,8 @@ export const useAuthStore = create<AuthState>()(
           
           set({ 
             user: data.user,
-            session: data.session
+            session: data.session,
+            isGuest: false,
           });
           
           // Notify other stores that user has logged in
@@ -116,7 +121,8 @@ export const useAuthStore = create<AuthState>()(
           // The profile and settings will be auto-created by our database trigger
           set({
             user: data.user,
-            session: data.session // This might be null until email is verified
+            session: data.session, // This might be null until email is verified
+            isGuest: false,
           });
         } catch (error: any) {
           console.error('Registration error:', error);
@@ -133,7 +139,7 @@ export const useAuthStore = create<AuthState>()(
           const { error } = await supabase.auth.signOut();
           if (error) throw error;
           
-          set({ user: null, session: null });
+          set({ user: null, session: null, isGuest: false });
           // Notify other stores that user has logged out
           storeEvents.emit('auth:logout');
         } catch (error: any) {
@@ -143,6 +149,15 @@ export const useAuthStore = create<AuthState>()(
         } finally {
           set({ isLoading: false });
         }
+      },
+
+      enterGuestMode: () => {
+        set({ user: null, session: null, isGuest: true, error: null });
+        storeEvents.emit('auth:login');
+      },
+
+      exitGuestMode: () => {
+        set({ isGuest: false });
       },
       
       loginWithGoogle: async () => {
@@ -186,6 +201,7 @@ export const useAuthStore = create<AuthState>()(
       partialize: (state) => ({
         user: state.user,
         session: state.session,
+        isGuest: state.isGuest,
       }),
     }
   )

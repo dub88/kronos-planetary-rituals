@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { getUserProfile, updateUserProfile, supabase } from '../services/supabase';
 import { storeEvents } from './events';
+import { useAuthStore } from './authStore';
 
 // Import Profile type from database.ts
 import type { Profile } from '../app/types/database';
@@ -84,6 +85,8 @@ export const useProfileStore = create<ProfileState>((set, get) => {
     },
       
     updateProfile: async (updates) => {
+      const { isGuest } = useAuthStore.getState();
+      if (isGuest) return;
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
       

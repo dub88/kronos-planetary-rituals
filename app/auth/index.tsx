@@ -16,7 +16,7 @@ import KronosLogo from '@/components/KronosLogo';
 export default function LoginScreen() {
   const router = useRouter();
   const { colors, currentDayTheme, isDark } = useTheme();
-  const { login, error, isLoading, clearError } = useAuthStore();
+  const { login, enterGuestMode, error, isLoading, clearError } = useAuthStore();
   
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -39,6 +39,11 @@ export default function LoginScreen() {
   
   const handleRegister = () => {
     router.push('/auth/register');
+  };
+
+  const handleContinueAsGuest = () => {
+    enterGuestMode();
+    router.replace('/');
   };
   
   return (
@@ -140,6 +145,15 @@ export default function LoginScreen() {
               fullWidth
             >
               Create an Account
+            </Button>
+
+            <Button
+              variant="ghost"
+              onPress={handleContinueAsGuest}
+              style={styles.guestButton}
+              fullWidth
+            >
+              Continue as Guest
             </Button>
           </Card>
           
@@ -245,6 +259,9 @@ const styles = StyleSheet.create({
     marginTop: 6,
   },
   secondaryButton: {
+    marginTop: 10,
+  },
+  guestButton: {
     marginTop: 10,
   },
   footer: {

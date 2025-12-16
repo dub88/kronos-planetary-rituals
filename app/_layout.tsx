@@ -10,7 +10,7 @@ import * as Font from 'expo-font';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 // Auth routing helper
-function useProtectedRoute(user: any, isInitialized: boolean) {
+function useProtectedRoute(user: any, isGuest: boolean, isInitialized: boolean) {
   const segments = useSegments();
   const router = useRouter();
   const [isNavigationReady, setIsNavigationReady] = useState(false);
@@ -32,20 +32,20 @@ function useProtectedRoute(user: any, isInitialized: boolean) {
 
     const inAuthGroup = segments[0] === 'auth';
     
-    if (!user && !inAuthGroup) {
+    if (!user && !isGuest && !inAuthGroup) {
       // Redirect to the sign-in page if not signed in
       router.replace('/auth');
-    } else if (user && inAuthGroup) {
+    } else if ((user || isGuest) && inAuthGroup) {
       // Redirect away from the sign-in page if signed in
       router.replace('/');
     }
-  }, [user, segments, router, isNavigationReady, isInitialized]);
+  }, [user, isGuest, segments, router, isNavigationReady, isInitialized]);
 }
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
   const { settings, initializeSettings } = useSettingsStore();
-  const { user, initialize: initializeAuth } = useAuthStore();
+  const { user, isGuest, initialize: initializeAuth } = useAuthStore();
   const [fontsLoaded, setFontsLoaded] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
 
@@ -53,7 +53,7 @@ export default function RootLayout() {
   SplashScreen.preventAutoHideAsync();
 
   // Use the protected route hook with initialization status
-  useProtectedRoute(user, isInitialized);
+  useProtectedRoute(user, isGuest, isInitialized);
 
   // Load fonts
   useEffect(() => {

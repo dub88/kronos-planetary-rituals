@@ -85,8 +85,12 @@ export const useRitualStore = create<RitualState>()((set, get) => ({
         try {
           set({ loading: true, error: null });
           
-          const user = useAuthStore.getState().user;
-          const userId = user?.id || 'anonymous';
+          const { user, isGuest } = useAuthStore.getState();
+          if (!user || isGuest) {
+            set({ loading: false });
+            return Promise.resolve();
+          }
+          const userId = user.id;
           
           // Create a ritual log to save to Supabase
           const ritualLog = {

@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, Text, ScrollView, TouchableOpacity, Alert, Image, Modal, FlatList, TextInput } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Redirect } from 'expo-router';
 import { useTheme } from '@/components/ThemeProvider';
+import { useAuthStore } from '@/stores/authStore';
 import { useProfileStore } from '@/stores/profileStore';
 import { useLocationStore } from '@/stores/locationStore';
 import { useRitualStore } from '@/stores/ritualStore';
@@ -36,12 +38,17 @@ const zodiacSigns = [
 ];
 
 export default function ProfileScreen() {
+  const { isGuest } = useAuthStore();
   const { colors, currentDayTheme, isDark } = useTheme();
   const insets = useSafeAreaInsets();
   const { profile, updateProfile, error: profileError } = useProfileStore();
   const { location, setLocation } = useLocationStore();
   const { completedRituals: ritualLogs, fetchCompletedRituals, error: ritualsError } = useRitualStore();
   const { settings, updateSettings, error: settingsError } = useSettingsStore();
+
+  if (isGuest) {
+    return <Redirect href="/(tabs)" />;
+  }
   const [showLocationPrompt, setShowLocationPrompt] = useState(false);
   const [showSignSelector, setShowSignSelector] = useState(false);
   const [signType, setSignType] = useState<'sun' | 'moon' | 'rising'>('sun');

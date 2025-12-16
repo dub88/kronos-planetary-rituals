@@ -5,12 +5,14 @@ import { StyleSheet } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTheme } from "../../components/ThemeProvider";
 import { useSettingsStore } from "../../stores/settingsStore";
+import { useAuthStore } from "../../stores/authStore";
 import { useColorScheme } from "react-native";
 
 export default function TabLayout() {
   const { colors } = useTheme();
   const colorScheme = useColorScheme();
   const { settings } = useSettingsStore();
+  const { isGuest } = useAuthStore();
   const insets = useSafeAreaInsets();
   
   // Determine if dark mode should be used
@@ -103,26 +105,30 @@ export default function TabLayout() {
           ),
         }}
       />
-      <Tabs.Screen
-        name="profile"
-        options={{
-          title: "Profile",
-          headerTitle: "Profile",
-          tabBarIcon: ({ color }) => (
-            <User size={24} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="settings"
-        options={{
-          title: "Settings",
-          headerTitle: "Settings",
-          tabBarIcon: ({ color }) => (
-            <Settings size={24} color={color} />
-          ),
-        }}
-      />
+      {!isGuest ? (
+        <>
+          <Tabs.Screen
+            name="profile"
+            options={{
+              title: "Profile",
+              headerTitle: "Profile",
+              tabBarIcon: ({ color }) => (
+                <User size={24} color={color} />
+              ),
+            }}
+          />
+          <Tabs.Screen
+            name="settings"
+            options={{
+              title: "Settings",
+              headerTitle: "Settings",
+              tabBarIcon: ({ color }) => (
+                <Settings size={24} color={color} />
+              ),
+            }}
+          />
+        </>
+      ) : null}
     </Tabs>
   );
 }

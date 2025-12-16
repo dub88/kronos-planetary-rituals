@@ -3,6 +3,7 @@ import { getUserSettings, updateUserSettings, getDefaultSettings as getDbDefault
 import { storeEvents } from './events';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getReminderSettings, updateReminderSettings } from '../services/reminderService';
+import { useAuthStore } from './authStore';
 
 // Import Settings type from database.ts
 import type { Settings as DatabaseSettings } from '../app/types/database';
@@ -46,6 +47,11 @@ export const useSettingsStore = create<SettingsState>((set, get) => {
     error: null,
   
     fetchSettings: async () => {
+      const { isGuest } = useAuthStore.getState();
+      if (isGuest) {
+        set({ settings: getDefaultSettings('default'), isLoading: false, error: null });
+        return;
+      }
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         // Silently use default settings when not authenticated
@@ -92,6 +98,11 @@ export const useSettingsStore = create<SettingsState>((set, get) => {
     },
   
     initializeSettings: async () => {
+      const { isGuest } = useAuthStore.getState();
+      if (isGuest) {
+        set({ settings: getDefaultSettings('default') });
+        return;
+      }
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         set({ settings: getDefaultSettings('default') });
@@ -102,6 +113,8 @@ export const useSettingsStore = create<SettingsState>((set, get) => {
     },
   
     updateSettings: async (newSettings) => {
+      const { isGuest } = useAuthStore.getState();
+      if (isGuest) return;
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
       
@@ -154,6 +167,11 @@ export const useSettingsStore = create<SettingsState>((set, get) => {
     },
   
     resetSettings: async () => {
+      const { isGuest } = useAuthStore.getState();
+      if (isGuest) {
+        set({ settings: getDefaultSettings('default') });
+        return;
+      }
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         set({ settings: getDefaultSettings('default') });

@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, View, Switch, TouchableOpacity, ScrollView, Alert, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Redirect } from 'expo-router';
 import { Bell, MapPin, Moon, Sun, Info, Shield, Trash2, LogOut, ChevronRight, Volume2, Vibrate, Calendar, Clock } from 'lucide-react-native';
 import { useTheme } from '@/components/ThemeProvider';
 import { useSettingsStore } from '@/stores/settingsStore';
@@ -18,7 +19,11 @@ export default function SettingsScreen() {
   const { location, fetchLocation, clearLocation } = useLocationStore();
   const { clearRituals } = useRitualStore();
   const { resetProfile } = useProfileStore();
-  const { logout } = useAuthStore();
+  const { logout, isGuest } = useAuthStore();
+
+  if (isGuest) {
+    return <Redirect href="/(tabs)" />;
+  }
   
   const handleToggleNotifications = () => {
     try {
