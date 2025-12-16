@@ -1,16 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, Text, ScrollView, TouchableOpacity, Alert, Image, Modal, FlatList, TextInput } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { LinearGradient } from 'expo-linear-gradient';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '@/components/ThemeProvider';
 import { useProfileStore } from '@/stores/profileStore';
 import { useLocationStore } from '@/stores/locationStore';
 import { useRitualStore } from '@/stores/ritualStore';
 import { useSettingsStore } from '@/stores/settingsStore';
 import ProfileAvatar from '@/components/ProfileAvatar';
-import GothicTitle from '@/components/GothicTitle';
-import GothicCard from '@/components/GothicCard';
-import DailyThemeContainer from '@/components/DailyThemeContainer';
+import Container from '@/components/ui/Container';
+import Card from '@/components/ui/Card';
 import KronosLogo from '@/components/KronosLogo';
 import PlanetSymbol from '@/components/ui/PlanetSymbol';
 import { MapPin, Calendar, BookOpen, Award, Settings, Edit2, AlertCircle, Moon, Sun, Star, ChevronDown, X } from 'lucide-react-native';
@@ -38,7 +36,8 @@ const zodiacSigns = [
 ];
 
 export default function ProfileScreen() {
-  const { colors, currentDayTheme } = useTheme();
+  const { colors, currentDayTheme, isDark } = useTheme();
+  const insets = useSafeAreaInsets();
   const { profile, updateProfile, error: profileError } = useProfileStore();
   const { location, setLocation } = useLocationStore();
   const { completedRituals: ritualLogs, fetchCompletedRituals, error: ritualsError } = useRitualStore();
@@ -208,23 +207,30 @@ export default function ProfileScreen() {
     
     setIsEditingProfile(false);
   };
+
+  const scrollPaddingBottom = 40 + 66 + 14 + insets.bottom;
   
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
-      <ScrollView 
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-      >
-        {/* Header with simplified design and logo */}
-        <View style={styles.header}>
-          <View style={styles.headerContent}>
-            <KronosLogo size={100} />
-            <GothicTitle 
-              title="Your Profile" 
-              subtitle=""
-            />
+      <Container withPattern>
+        <ScrollView
+          contentContainerStyle={[styles.scrollContent, { paddingBottom: scrollPaddingBottom }]}
+          showsVerticalScrollIndicator={false}
+        >
+          <View style={styles.hero}>
+            <View style={styles.heroTopRow}>
+              <KronosLogo size={56} />
+              <View style={styles.heroTextCol}>
+                <Text style={[styles.heroKicker, { color: colors.textSecondary }]}>Profile</Text>
+                <Text style={[styles.heroTitle, { color: colors.text }]}>
+                  {profile?.name || 'Your Profile'}
+                </Text>
+              </View>
+              <View style={[styles.heroOrb, { backgroundColor: `${colors.primary}14`, borderColor: colors.border }]}> 
+                <PlanetSymbol planetId={currentDayTheme.planetId} size={28} variant="glowing" />
+              </View>
+            </View>
           </View>
-        </View>
         
         {/* Error message if there's an error */}
         {(profileError || ritualsError || settingsError) && (
@@ -237,7 +243,12 @@ export default function ProfileScreen() {
         )}
         
         {/* Profile Card */}
-        <GothicCard style={styles.profileCard}>
+        <Card
+          variant="filled"
+          color={isDark ? (colors.surface2 || colors.surface) : colors.surface}
+          withGradient={!isDark}
+          style={styles.profileCard}
+        >
           <View style={styles.profileContent}>
             {!isEditingProfile ? (
               <>
@@ -316,10 +327,15 @@ export default function ProfileScreen() {
               </View>
             )}
           </View>
-        </GothicCard>
+        </Card>
         
         {/* Astrological Signs Card */}
-        <GothicCard style={styles.astroSignsCard}>
+        <Card
+          variant="filled"
+          color={isDark ? (colors.surface2 || colors.surface) : colors.surface}
+          withGradient={!isDark}
+          style={styles.astroSignsCard}
+        >
           <View style={styles.sectionHeader}>
             <View style={[styles.iconContainer, { backgroundColor: `${currentDayTheme.colors.primary}20` }]}>
               <Star size={18} color={currentDayTheme.colors.primary} />
@@ -392,10 +408,15 @@ export default function ProfileScreen() {
               </View>
             </TouchableOpacity>
           </View>
-        </GothicCard>
+        </Card>
         
         {/* Stats Card */}
-        <GothicCard style={styles.statsCard}>
+        <Card
+          variant="filled"
+          color={isDark ? (colors.surface2 || colors.surface) : colors.surface}
+          withGradient={!isDark}
+          style={styles.statsCard}
+        >
           <View style={styles.statsRow}>
             <View style={styles.statItem}>
               <View style={[styles.statBadgeContainer, { backgroundColor: `${currentDayTheme.colors.primary}20` }]}>
@@ -435,10 +456,15 @@ export default function ProfileScreen() {
               </Text>
             </View>
           </View>
-        </GothicCard>
+        </Card>
         
         {/* Location Card */}
-        <GothicCard style={styles.locationCard}>
+        <Card
+          variant="filled"
+          color={isDark ? (colors.surface2 || colors.surface) : colors.surface}
+          withGradient={!isDark}
+          style={styles.locationCard}
+        >
           <View style={styles.sectionHeader}>
             <View style={[styles.iconContainer, { backgroundColor: `${currentDayTheme.colors.primary}20` }]}>
               <MapPin size={18} color={currentDayTheme.colors.primary} />
@@ -463,10 +489,15 @@ export default function ProfileScreen() {
               Used for planetary hour calculations
             </Text>
           </View>
-        </GothicCard>
+        </Card>
         
         {/* Achievements Card */}
-        <GothicCard style={styles.achievementsCard}>
+        <Card
+          variant="filled"
+          color={isDark ? (colors.surface2 || colors.surface) : colors.surface}
+          withGradient={!isDark}
+          style={styles.achievementsCard}
+        >
           <View style={styles.sectionHeader}>
             <View style={[styles.iconContainer, { backgroundColor: `${currentDayTheme.colors.primary}20` }]}>
               <Award size={18} color={currentDayTheme.colors.primary} />
@@ -590,10 +621,15 @@ export default function ProfileScreen() {
               </View>
             </View>
           </View>
-        </GothicCard>
+        </Card>
         
         {/* Streak Card */}
-        <GothicCard style={styles.streakCard}>
+        <Card
+          variant="filled"
+          color={isDark ? (colors.surface2 || colors.surface) : colors.surface}
+          withGradient={!isDark}
+          style={styles.streakCard}
+        >
           <View style={styles.sectionHeader}>
             <View style={[styles.iconContainer, { backgroundColor: `${currentDayTheme.colors.primary}20` }]}>
               <Calendar size={18} color={currentDayTheme.colors.primary} />
@@ -621,10 +657,15 @@ export default function ProfileScreen() {
               <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Highest Streak</Text>
             </View>
           </View>
-        </GothicCard>
+        </Card>
         
         {/* Recent Activity Card */}
-        <GothicCard style={styles.recentActivityCard}>
+        <Card
+          variant="filled"
+          color={isDark ? (colors.surface2 || colors.surface) : colors.surface}
+          withGradient={!isDark}
+          style={styles.recentActivityCard}
+        >
           <View style={styles.sectionHeader}>
             <View style={[styles.iconContainer, { backgroundColor: `${currentDayTheme.colors.primary}20` }]}>
               <BookOpen size={18} color={currentDayTheme.colors.primary} />
@@ -657,7 +698,7 @@ export default function ProfileScreen() {
               </Text>
             </View>
           )}
-        </GothicCard>
+        </Card>
       </ScrollView>
       
       {showLocationPrompt && (
@@ -695,7 +736,7 @@ export default function ProfileScreen() {
                   onPress={() => saveSignSelection(item.id)}
                 >
                   <View style={[styles.zodiacIconContainer, { backgroundColor: `${currentDayTheme.colors.primary}20` }]}>
-                    <Text style={styles.zodiacSymbolLarge}>{item.symbol}</Text>
+                    <Text style={[styles.zodiacSymbolLarge, { color: colors.text }]}>{item.symbol}</Text>
                   </View>
                   <View style={styles.zodiacInfo}>
                     <Text style={[styles.zodiacName, { color: colors.text }]}>{item.name}</Text>
@@ -710,6 +751,7 @@ export default function ProfileScreen() {
           </View>
         </View>
       </Modal>
+      </Container>
     </SafeAreaView>
   );
 }
@@ -735,26 +777,38 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 14,
   },
-  // Header styles
-  header: {
-    marginBottom: 16,
+  hero: {
+    paddingTop: 10,
+    paddingBottom: 10,
+    marginBottom: 8,
   },
-  headerContent: {
-    borderRadius: 12,
-    overflow: 'hidden',
-    padding: 16,
-    width: '100%',
+  heroTopRow: {
+    flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
+    paddingHorizontal: 2,
   },
-  headerSymbol: {
-    width: 40,
-    height: 40,
-    justifyContent: 'center',
+  heroTextCol: {
+    flex: 1,
+  },
+  heroKicker: {
+    fontSize: 12,
+    fontFamily: 'Inter-Medium',
+    letterSpacing: 0.3,
+    textTransform: 'uppercase',
+  },
+  heroTitle: {
+    fontSize: 22,
+    fontFamily: 'Inter-Bold',
+    letterSpacing: 0.2,
+  },
+  heroOrb: {
+    width: 44,
+    height: 44,
+    borderRadius: 14,
+    borderWidth: 1,
     alignItems: 'center',
-    position: 'absolute',
-    right: 16,
-    top: 16,
+    justifyContent: 'center',
   },
   // Profile card styles
   profileCard: {

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Image } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BookOpen, Clock, Flame, Calendar, ArrowLeft, ArrowRight } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
@@ -147,6 +147,7 @@ export default function LearnScreen() {
   const router = useRouter();
   const { colors, isDark } = useTheme();
   const { location } = useLocationStore();
+  const insets = useSafeAreaInsets();
   const topics = React.useMemo(() => createTopics(colors), [colors]);
   const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
   const [selectedHymn, setSelectedHymn] = useState<string | null>(null);
@@ -169,7 +170,11 @@ export default function LearnScreen() {
     // Special case for Orphic Hymns - show list of hymns
     if (topic.id === 'orphic-hymns' && !selectedHymn) {
       return (
-        <ScrollView style={styles.topicContent}>
+        <ScrollView
+          style={styles.topicContent}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingBottom: 40 + 66 + 14 + insets.bottom }}
+        >
           <View style={styles.topicHeader}>
             <View style={styles.topicIconContainer}>
               {topic.icon}
@@ -215,7 +220,10 @@ export default function LearnScreen() {
     }
     
     return (
-      <ScrollView style={styles.topicContent}>
+      <ScrollView
+        style={styles.topicContent}
+        contentContainerStyle={{ paddingBottom: 40 + 66 + 14 + insets.bottom }}
+      >
         <View style={styles.topicHeader}>
           <View style={styles.topicIconContainer}>
             {topic.icon}
@@ -438,9 +446,11 @@ export default function LearnScreen() {
   // Create styles with current theme colors
   const styles = React.useMemo(() => createStyles(colors), [colors]);
 
+  const scrollPaddingBottom = 40 + 66 + 14 + insets.bottom;
+
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollContent}>
+      <ScrollView contentContainerStyle={[styles.scrollContent, { paddingBottom: scrollPaddingBottom }]}>
         {selectedTopic ? (
           renderTopicContent()
         ) : (

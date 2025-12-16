@@ -2,6 +2,7 @@ import React from "react";
 import { Tabs } from "expo-router";
 import { Home, Calendar, BookOpen, User, Settings } from "lucide-react-native";
 import { StyleSheet } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTheme } from "../../components/ThemeProvider";
 import { useSettingsStore } from "../../stores/settingsStore";
 import { useColorScheme } from "react-native";
@@ -10,6 +11,7 @@ export default function TabLayout() {
   const { colors } = useTheme();
   const colorScheme = useColorScheme();
   const { settings } = useSettingsStore();
+  const insets = useSafeAreaInsets();
   
   // Determine if dark mode should be used
   const isDarkMode = settings?.theme === 'system' 
@@ -25,7 +27,7 @@ export default function TabLayout() {
           position: 'absolute',
           left: 14,
           right: 14,
-          bottom: 14,
+          bottom: 14 + insets.bottom,
           height: 66,
           paddingBottom: 10,
           paddingTop: 8,
@@ -41,6 +43,7 @@ export default function TabLayout() {
         tabBarLabelStyle: {
           fontSize: 12,
           fontFamily: 'Inter-Medium',
+          marginBottom: 2,
         },
         headerStyle: {
           backgroundColor: colors.background,
@@ -61,7 +64,7 @@ export default function TabLayout() {
         tabBarShowLabel: true,
         tabBarHideOnKeyboard: true,
         tabBarIconStyle: {
-          marginTop: 5,
+          marginTop: 0,
         },
       }}
     >
