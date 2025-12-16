@@ -23,14 +23,15 @@ export default function TabLayout() {
       screenOptions={{
         tabBarActiveTintColor: colors.primary,
         tabBarInactiveTintColor: colors.textSecondary,
+        tabBarLabelPosition: 'below-icon',
         tabBarStyle: {
           position: 'absolute',
           left: 14,
           right: 14,
           bottom: 14 + insets.bottom,
-          height: 66,
-          paddingBottom: 10,
-          paddingTop: 8,
+          height: 78,
+          paddingBottom: 14,
+          paddingTop: 10,
           borderRadius: 18,
           backgroundColor: colors.surface,
           borderTopWidth: 0,
@@ -40,10 +41,14 @@ export default function TabLayout() {
           shadowRadius: 24,
           elevation: 6,
         },
+        tabBarItemStyle: {
+          paddingVertical: 2,
+        },
         tabBarLabelStyle: {
           fontSize: 12,
           fontFamily: 'Inter-Medium',
-          marginBottom: 2,
+          marginBottom: 0,
+          lineHeight: 14,
         },
         headerStyle: {
           backgroundColor: colors.background,
@@ -64,7 +69,7 @@ export default function TabLayout() {
         tabBarShowLabel: true,
         tabBarHideOnKeyboard: true,
         tabBarIconStyle: {
-          marginTop: 0,
+          marginTop: 2,
         },
       }}
     >

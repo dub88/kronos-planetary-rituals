@@ -321,7 +321,7 @@ export default function ProfileScreen() {
                     style={[styles.saveButton, { backgroundColor: currentDayTheme.colors.primary }]}
                     onPress={saveProfileEdits}
                   >
-                    <Text style={{ color: '#FFFFFF' }}>Save</Text>
+                    <Text style={{ color: '#FFFFFF', fontFamily: 'Inter-Bold' }}>Save</Text>
                   </TouchableOpacity>
                 </View>
               </View>
@@ -832,9 +832,8 @@ const styles = StyleSheet.create({
   },
   profileName: {
     fontSize: 22,
-    fontWeight: 'bold',
+    fontFamily: 'Inter-Bold',
     marginBottom: 4,
-    fontFamily: 'serif',
   },
   profileBio: {
     fontSize: 14,
@@ -862,8 +861,7 @@ const styles = StyleSheet.create({
   },
   statValue: {
     fontSize: 24,
-    fontWeight: 'bold',
-    fontFamily: 'serif',
+    fontFamily: 'Inter-Bold',
   },
   statLabel: {
     fontSize: 12,
@@ -872,7 +870,7 @@ const styles = StyleSheet.create({
   statDivider: {
     width: 1,
     height: 40,
-    backgroundColor: 'rgba(255,255,255,0.1)',
+    backgroundColor: 'rgba(255,255,255,0.18)',
   },
   // Astrological signs styles
   astroSignsCard: {
@@ -896,7 +894,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 12,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255,255,255,0.1)',
+    borderBottomColor: 'rgba(255,255,255,0.14)',
   },
   lastSignItem: {
     borderBottomWidth: 0,
@@ -913,7 +911,7 @@ const styles = StyleSheet.create({
   },
   signLabel: {
     fontSize: 14,
-    color: 'rgba(255,255,255,0.7)',
+    fontFamily: 'Inter-Medium',
   },
   signValueContainer: {
     flexDirection: 'row',
@@ -921,8 +919,7 @@ const styles = StyleSheet.create({
   },
   signValue: {
     fontSize: 16,
-    fontWeight: 'bold',
-    color: '#FFFFFF',
+    fontFamily: 'Inter-Bold',
     textTransform: 'capitalize',
   },
   signSymbol: {
@@ -989,7 +986,7 @@ const styles = StyleSheet.create({
   // Zodiac sign avatar
   zodiacSymbol: {
     fontSize: 36,
-    color: '#FFFFFF',
+    fontFamily: 'Inter-Bold',
   },
   
   // Streak card
@@ -1018,11 +1015,11 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     paddingBottom: 16,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255,255,255,0.1)',
+    borderBottomColor: 'rgba(255,255,255,0.14)',
   },
   modalTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontFamily: 'Inter-Bold',
   },
   zodiacList: {
     maxHeight: 400,
@@ -1043,14 +1040,14 @@ const styles = StyleSheet.create({
   },
   zodiacSymbolLarge: {
     fontSize: 24,
-    color: '#FFFFFF',
+    fontFamily: 'Inter-Bold',
   },
   zodiacInfo: {
     flex: 1,
   },
   zodiacName: {
     fontSize: 16,
-    fontWeight: 'bold',
+    fontFamily: 'Inter-Bold',
   },
   zodiacElement: {
     fontSize: 12,
@@ -1066,9 +1063,8 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontFamily: 'Inter-Bold',
     marginLeft: 8,
-    fontFamily: 'serif',
     flex: 1,
   },
   locationEditButton: {
@@ -1095,7 +1091,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     paddingBottom: 12,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255,255,255,0.1)',
+    borderBottomColor: 'rgba(255,255,255,0.14)',
     flexDirection: 'row',
     alignItems: 'center',
   },
@@ -1113,7 +1109,7 @@ const styles = StyleSheet.create({
   },
   achievementTitle: {
     fontSize: 16,
-    fontWeight: 'bold',
+    fontFamily: 'Inter-Bold',
     marginBottom: 2,
   },
   achievementDesc: {
@@ -1128,7 +1124,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     paddingBottom: 12,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255,255,255,0.1)',
+    borderBottomColor: 'rgba(255,255,255,0.14)',
   },
   activityIconContainer: {
     width: 40,
@@ -1144,7 +1140,7 @@ const styles = StyleSheet.create({
   },
   activityTitle: {
     fontSize: 16,
-    fontWeight: 'bold',
+    fontFamily: 'Inter-Bold',
     marginBottom: 2,
   },
   activityDate: {
